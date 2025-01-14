@@ -1,3 +1,11 @@
+#Player setting
+<Player>:
+    canvas:
+        Ellipse:
+            pos: 0, 0
+            size: 50, 50
+
+#On MainMenu Screen
 <MainMenu>:
     BoxLayout:
         orientation: 'vertical'
@@ -12,6 +20,7 @@
             pos_hint: {'center_x': 0.5}
             on_press: app.root.current = 'game'  # สลับไปที่ GameScreen
 
+#On Game Screen
 <GameScreen>:
     BoxLayout:
         orientation: 'vertical'
@@ -19,4 +28,4 @@
         Label:
             text: 'Game Started!'
             font_size: 24
-
+    Player:

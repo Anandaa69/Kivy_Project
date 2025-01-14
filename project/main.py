@@ -4,6 +4,8 @@ kivy.require('2.3.1')
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.widget import Widget
+
 
 # Main Menu
 class MainMenu(Screen):
@@ -12,6 +14,11 @@ class MainMenu(Screen):
 # In Game
 class GameScreen(Screen):
     pass
+
+#Player
+class Player(Widget):
+    pass
+
 
 # Main App
 class MyGameApp(App):
