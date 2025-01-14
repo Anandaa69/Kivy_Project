@@ -2,6 +2,7 @@
 <Player>:
     canvas:
         Ellipse:
+            source: 'assets/Player.png'
             pos: self.pos
             size: 50, 50
 
@@ -28,5 +29,12 @@
         Label:
             text: 'Game Started!'
             font_size: 24
+
+        Button:
+            text: 'Go back'
+            size_hint: 0.5, 0.2
+            pos_hint: {'center_x': 0.5}
+            on_press: app.root.current = 'main_menu'
+
         Player:
             id: player
