@@ -16,10 +16,9 @@ class GameScreen(Screen):
 # Main App
 class MyGameApp(App):
     def build(self):
-        # สร้าง ScreenManager และเพิ่มหน้าจอ
         sm = ScreenManager()
-        sm.add_widget(MainMenu(name='main_menu'))  # เพิ่ม MainMenu
-        sm.add_widget(GameScreen(name='game'))    # เพิ่ม GameScreen
+        sm.add_widget(MainMenu(name='main_menu'))
+        sm.add_widget(GameScreen(name='game'))
         return sm
 
 if __name__ == '__main__':
