@@ -20,15 +20,30 @@ class GameScreen(Screen):
 class Player(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        #Keyboard
         self._keyboard = Window.request_keyboard(self, self._on_keyboard_closed)
         self._keyboard.bind(on_key_down=self._on_key_down)
     
+#on keyboard input
     def _on_keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_key_down)
         self._keyboard = None
         
     def _on_key_down(self, keyboard, keycode, text, modifiers):
-        print("key down has been detected")
+        print('Keyboard Detected')
+        print(self.pos)
+        currentx, currenty = self.pos
+        
+        if text == "w":
+            currenty += 1
+        if text == "s" :
+            currenty -= 1
+        if text == "a":
+            currentx -= 1
+        if text == "d":
+            currentx += 1
+            
+        self.pos = (currentx, currenty)
         
 
 
