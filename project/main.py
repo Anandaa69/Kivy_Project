@@ -29,7 +29,18 @@ class GameScreen(Screen):
         self.ids.player.pos = (0, 0)
 
 class SettingScreen(Screen):
-    pass
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.select = 0 # 0 --> 1280 , 1 --> 1980
+
+    def select_screen(self, value):
+        if value == 0:
+            print('Change to 1280x720')
+            Window.fullscreen = False
+            Window.size = (1280, 720)
+        elif value == 1:
+            print('Change to FullScreen')
+            Window.fullscreen = True
 
 #Player
 class Player(Widget):

@@ -33,6 +33,29 @@
             size_hint: 0.5, 0.2
             pos_hint: {'center_x': 0.5}
             on_press: app.root.current = 'setting_menu'  # สลับไปที่ GameScreen
+
+<SettingScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+
+        Button:
+            text: '1280 x 720'
+            size_hint: 0.5, 0.2
+            pos_hint: {'center_x': 0.5}
+            on_press: root.select_screen(0)
+        
+        Button:
+            text: '1980 x 1080'
+            size_hint: 0.5, 0.2
+            pos_hint: {'center_x': 0.5}
+            on_press: root.select_screen(1)
+
+        Button:
+            text: 'Back'
+            size_hint: 0.5, 0.2
+            pos_hint: {'center_x': 0.5}
+            on_press: app.root.current = 'main_menu'
+
 #On Game Screen
 <GameScreen>:
     
