@@ -27,7 +27,12 @@
             size_hint: 0.5, 0.2
             pos_hint: {'center_x': 0.5}
             on_press: app.root.current = 'game'  # สลับไปที่ GameScreen
-
+        
+        Button:
+            text: 'Setting'
+            size_hint: 0.5, 0.2
+            pos_hint: {'center_x': 0.5}
+            on_press: app.root.current = 'setting_menu'  # สลับไปที่ GameScreen
 #On Game Screen
 <GameScreen>:
     

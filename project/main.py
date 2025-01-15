@@ -4,8 +4,8 @@ kivy.require('2.3.1')
 from kivy.config import Config
 
 # กำหนดค่าคอนฟิก
-Config.set('graphics', 'width', '800')  # ความกว้างของหน้าต่าง
-Config.set('graphics', 'height', '600')  # ความสูงของหน้าต่าง
+Config.set('graphics', 'width', '1280')  # ความกว้างของหน้าต่าง
+Config.set('graphics', 'height', '720')  # ความสูงของหน้าต่าง
 Config.set('graphics', 'resizable', False)  # ปิดการปรับขนาดหน้าต่าง
 
 from kivy.app import App
@@ -27,6 +27,9 @@ class GameScreen(Screen):
     
     def on_leave(self): 
         self.ids.player.pos = (0, 0)
+
+class SettingScreen(Screen):
+    pass
 
 #Player
 class Player(Widget):
@@ -91,6 +94,7 @@ class MyGameApp(App):
         sm = ScreenManager()
         sm.add_widget(MainMenu(name='main_menu'))
         sm.add_widget(GameScreen(name='game'))
+        sm.add_widget(SettingScreen(name='setting_menu'))
         return sm
 
 if __name__ == '__main__':
