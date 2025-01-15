@@ -1,12 +1,20 @@
 import kivy
 kivy.require('2.3.1')
 
+from kivy.config import Config
+
+# กำหนดค่าคอนฟิก
+Config.set('graphics', 'width', '800')  # ความกว้างของหน้าต่าง
+Config.set('graphics', 'height', '600')  # ความสูงของหน้าต่าง
+Config.set('graphics', 'resizable', False)  # ปิดการปรับขนาดหน้าต่าง
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.widget import Widget
 from kivy.core.window import Window
 from kivy.clock import Clock
+from kivy.properties import NumericProperty
 
 # Main Menu
 class MainMenu(Screen):
@@ -14,21 +22,29 @@ class MainMenu(Screen):
 
 # In Game
 class GameScreen(Screen):
-    pass
+    def on_enter(self):
+        pass
+    
+    def on_leave(self): 
+        self.ids.player.pos = (0, 0)
 
 #Player
 class Player(Widget):
+    rotation = NumericProperty(0)
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        
         #Keyboard
-        self._keyboard = Window.request_keyboard(self, self._on_keyboard_closed)
+        self._keyboard = Window.request_keyboard(self._on_keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_key_down)
         self._keyboard.bind(on_key_up=self._on_key_up)
     
         self.keysPressed = set()
 
+        self.center_player = list()
+        
         Clock.schedule_interval(self.move_step, 1/60)
-#on keyboard input
+    #on keyboard input
     def _on_keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_key_down)
         self._keyboard.unbind(on_key_up=self._on_key_up)
@@ -45,7 +61,10 @@ class Player(Widget):
     def move_step(self, dt):
         currentx, currenty = self.pos
         
+        #Setup
         step_size = 100 * dt
+        step_rotate = 190 * dt
+        
         if "w" in self.keysPressed:
             currenty += step_size
         if "s" in self.keysPressed :
@@ -54,9 +73,18 @@ class Player(Widget):
             currentx -= step_size
         if "d" in self.keysPressed:
             currentx += step_size
-            
-        self.pos = (currentx, currenty)
         
+        if "j" in self.keysPressed:
+            self.rotation += step_rotate
+        if "k" in self.keysPressed:
+            self.rotation -= step_rotate
+        if "l" in self.keysPressed:
+            print(self.center)
+            print('pos =',self.pos)
+            print('size =',[self.width, self.height])
+        #Update
+        self.pos = (currentx, currenty)
+
 # Main App
 class MyGameApp(App):
     def build(self):

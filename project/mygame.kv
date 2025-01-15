@@ -1,10 +1,17 @@
 #Player setting
 <Player>:
-    canvas:
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: root.rotation
+            origin: self.pos[0]+25, self.pos[1]+25
+    canvas:    
         Ellipse:
             source: 'assets/Player.png'
             pos: self.pos
             size: 50, 50
+    canvas.after:
+        PopMatrix
 
 #On MainMenu Screen
 <MainMenu>:
@@ -23,6 +30,7 @@
 
 #On Game Screen
 <GameScreen>:
+    
     BoxLayout:
         orientation: 'vertical'
         
