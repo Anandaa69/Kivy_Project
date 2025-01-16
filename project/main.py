@@ -49,32 +49,39 @@ class Bullet(Widget):
         super().__init__(**kwargs)
         self.size = (10, 10)
         self.pos = (x, y)
-        self.rotation = rotation  # หมุนกระสุนตามทิศทางของผู้เล่น
-        self.velocity = 300  # ความเร็วของกระสุน
+        self.rotation = rotation
+        self.velocity = 500  # Speed
 
-        # อัปเดตตำแหน่งของกระสุนในทุก ๆ เฟรม
+        # Update frame by frame
         Clock.schedule_interval(self.move_bullet, 1/60)
 
     def move_bullet(self, dt):
-        # คำนวณการเคลื่อนที่ของกระสุนในทิศทางที่มันหมุน
-        angle_rad = math.radians(self.rotation)  # แปลงองศาเป็นเรเดียน
+        # Bullet path cal
+        angle_rad = math.radians(self.rotation)
 
-        # คำนวณการเปลี่ยนแปลงตำแหน่ง
-        dx = self.velocity * dt * math.cos(angle_rad)  # การเคลื่อนที่ในแนวนอน
-        dy = self.velocity * dt * math.sin(angle_rad)  # การเคลื่อนที่ในแนวตั้ง
+        dx = self.velocity * dt * math.cos(angle_rad)
+        dy = self.velocity * dt * math.sin(angle_rad)
 
-        # ปรับตำแหน่งของกระสุน
+        # Update values
         self.x += dx
         self.y += dy
         self.pos = (self.x, self.y)
 
+        #Check Collide with Wall
+        if self.x < 42 or self.x > Window.width-42 or self.y < 42 or self.y > Window.height-42: # 42 mean pixel of width and height of wall in background
+            self.remove_bullet()
+        
+    def remove_bullet(self):
+        if self.parent:
+            self.parent.remove_widget(self)
+        
+        Clock.unschedule(self.move_bullet)
+        
 #Player
 class Player(Widget):
     rotation = NumericProperty(0)
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.bullets = []  # เก็บกระสุนที่ยิงออกไป
-        
+        super().__init__(**kwargs)        
         #Keyboard
         self._keyboard = Window.request_keyboard(self._on_keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_key_down)
@@ -106,7 +113,7 @@ class Player(Widget):
         # ยิงกระสุนไปตามทิศทางที่ผู้เล่นหมุน 
         bullet = Bullet(self.pos[0]+self.base_width/2, self.pos[1]+self.base_height/2, self.rotation)
         self.parent.add_widget(bullet)  # เพิ่มกระสุนไปยังหน้าจอ
-        self.bullets.append(bullet)  # เก็บกระสุนไว้
+        # self.bullets.append(bullet)  # เก็บกระสุนไว้
 
     def move_step(self, dt):
         currentx, currenty = self.pos
@@ -122,16 +129,18 @@ class Player(Widget):
         if "a" in self.keysPressed:
             currentx -= step_size
         if "d" in self.keysPressed:
-            currentx += step_size
-        
+            currentx += step_size  
         if "j" in self.keysPressed:
             self.rotation += step_rotate
         if "k" in self.keysPressed:
             self.rotation -= step_rotate
+        #Check
         if "l" in self.keysPressed:
             print(self.rotation)
             print('pos =',self.pos)
             print('size =',self.size)
+        if "i" in self.keysPressed:
+            print(self.bullets)
         
         #Update
         self.pos = (currentx, currenty)

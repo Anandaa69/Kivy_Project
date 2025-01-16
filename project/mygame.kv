@@ -6,10 +6,10 @@
         PushMatrix
         Rotate:
             angle: root.rotation
-            origin: self.pos[0]+self.base_width / 2, self.pos[1]+self.base_height / 2
+            origin: self.x+self.base_width / 2, self.y+self.base_height / 2
     canvas:    
         Ellipse:
-            source: 'assets/Player.png'
+            source: 'assets/player.png'
             pos: self.pos
             size: self.base_width, self.base_height
     canvas.after:
@@ -67,17 +67,10 @@
 
 #On Game Screen
 <GameScreen>:
+    Image:
+        source: 'assets/bg.png'
+        # allow_stretch: True  # ทำให้ภาพขยายได้
+        # keep_ratio: False  # ปิดการรักษาสัดส่วนของภาพ
     FloatLayout:
-        
-        Label:
-            text: 'Game Started!'
-            font_size: 24
-
-        Button:
-            text: 'Go back'
-            size_hint: 0.5, 0.2
-            pos_hint: {'center_x': 0.5}
-            on_press: app.root.current = 'main_menu'
-
         Player:
             id: player
