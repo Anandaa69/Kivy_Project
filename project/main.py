@@ -15,6 +15,7 @@ from kivy.uix.widget import Widget
 from kivy.core.window import Window
 from kivy.clock import Clock
 from kivy.properties import NumericProperty
+from kivy.graphics import Ellipse, Line
 
 # Main Menu
 class MainMenu(Screen):
@@ -42,11 +43,34 @@ class SettingScreen(Screen):
             print('Change to FullScreen')
             Window.fullscreen = True
 
+class Bullet(Widget):
+    def __init__(self, x, y, rotation, **kwargs):
+        super().__init__(**kwargs)
+        self.size = (10, 10)
+        self.pos = (x, y)
+        self.rotation = rotation  # หมุนกระสุนตามทิศทางของผู้เล่น
+        self.velocity = 300  # ความเร็วของกระสุน
+
+        # อัปเดตตำแหน่งของกระสุนในทุก ๆ เฟรม
+        Clock.schedule_interval(self.move_bullet, 1/60)
+
+    # def move_bullet(self, dt):
+    #     # คำนวณการเคลื่อนที่ของกระสุนในทิศทางที่มันหมุน
+    #     angle_rad = (self.rotation - 90) * (3.14159 / 180)  # แปลงองศาเป็นเรเดียน
+    #     dx = self.velocity * dt * -1 * 3.14 * 180 / 90
+    #     dy = self.velocity * dt * 0.5
+
+    #     # ปรับตำแหน่งของกระสุน
+    #     self.x += dx
+    #     self.y += dy
+    #     self.pos = (self.x, self.y)
+
 #Player
 class Player(Widget):
     rotation = NumericProperty(0)
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.bullets = []  # เก็บกระสุนที่ยิงออกไป
         
         #Keyboard
         self._keyboard = Window.request_keyboard(self._on_keyboard_closed, self)
@@ -66,11 +90,20 @@ class Player(Widget):
         
     def _on_key_down(self, keyboard, keycode, text, modifiers):
         self.keysPressed.add(text)
+
+        if text == " ":  # กด spacebar เพื่อยิงกระสุน
+            self.shoot_bullet()
     
     def _on_key_up(self, keyboard, keycode):
         text = keycode[1]
         if text in self.keysPressed:
             self.keysPressed.remove(text)
+
+    def shoot_bullet(self):
+        # ยิงกระสุนไปตามทิศทางที่ผู้เล่นหมุน 
+        bullet = Bullet(self.pos[0]+self.base_width/2, self.pos[1]+self.base_height/2, self.rotation)
+        self.parent.add_widget(bullet)  # เพิ่มกระสุนไปยังหน้าจอ
+        self.bullets.append(bullet)  # เก็บกระสุนไว้
 
     def move_step(self, dt):
         currentx, currenty = self.pos
@@ -93,9 +126,10 @@ class Player(Widget):
         if "k" in self.keysPressed:
             self.rotation -= step_rotate
         if "l" in self.keysPressed:
-            print(self.center)
+            print(self.rotation)
             print('pos =',self.pos)
             print('size =',self.size)
+        
         #Update
         self.pos = (currentx, currenty)
 

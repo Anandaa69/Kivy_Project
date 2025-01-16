@@ -1,19 +1,26 @@
 #Player setting
 <Player>:
     base_width: 50
-    base_hegiht: 50
+    base_height: 50
     canvas.before:
         PushMatrix
         Rotate:
             angle: root.rotation
-            origin: self.pos[0]+self.base_width / 2, self.pos[1]+self.base_hegiht / 2
+            origin: self.pos[0]+self.base_width / 2, self.pos[1]+self.base_height / 2
     canvas:    
         Ellipse:
             source: 'assets/Player.png'
             pos: self.pos
-            size: self.base_width, self.base_hegiht
+            size: self.base_width, self.base_height
     canvas.after:
         PopMatrix
+
+<Bullet>:
+    canvas:
+        Ellipse:
+            source: 'assets/bullet.png'
+            pos: self.pos
+            size: 10, 10
 
 #On MainMenu Screen
 <MainMenu>:
@@ -60,9 +67,7 @@
 
 #On Game Screen
 <GameScreen>:
-    
-    BoxLayout:
-        orientation: 'vertical'
+    FloatLayout:
         
         Label:
             text: 'Game Started!'
