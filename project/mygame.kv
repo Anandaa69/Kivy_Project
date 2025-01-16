@@ -1,15 +1,17 @@
 #Player setting
 <Player>:
+    base_width: 50
+    base_hegiht: 50
     canvas.before:
         PushMatrix
         Rotate:
             angle: root.rotation
-            origin: self.pos[0]+25, self.pos[1]+25
+            origin: self.pos[0]+self.base_width / 2, self.pos[1]+self.base_hegiht / 2
     canvas:    
         Ellipse:
             source: 'assets/Player.png'
             pos: self.pos
-            size: 50, 50
+            size: self.base_width, self.base_hegiht
     canvas.after:
         PopMatrix
 

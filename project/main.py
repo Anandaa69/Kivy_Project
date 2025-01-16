@@ -95,7 +95,7 @@ class Player(Widget):
         if "l" in self.keysPressed:
             print(self.center)
             print('pos =',self.pos)
-            print('size =',[self.width, self.height])
+            print('size =',self.size)
         #Update
         self.pos = (currentx, currenty)
 
