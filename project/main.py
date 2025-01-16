@@ -16,6 +16,7 @@ from kivy.core.window import Window
 from kivy.clock import Clock
 from kivy.properties import NumericProperty
 from kivy.graphics import Ellipse, Line
+import math
 
 # Main Menu
 class MainMenu(Screen):
@@ -54,16 +55,18 @@ class Bullet(Widget):
         # อัปเดตตำแหน่งของกระสุนในทุก ๆ เฟรม
         Clock.schedule_interval(self.move_bullet, 1/60)
 
-    # def move_bullet(self, dt):
-    #     # คำนวณการเคลื่อนที่ของกระสุนในทิศทางที่มันหมุน
-    #     angle_rad = (self.rotation - 90) * (3.14159 / 180)  # แปลงองศาเป็นเรเดียน
-    #     dx = self.velocity * dt * -1 * 3.14 * 180 / 90
-    #     dy = self.velocity * dt * 0.5
+    def move_bullet(self, dt):
+        # คำนวณการเคลื่อนที่ของกระสุนในทิศทางที่มันหมุน
+        angle_rad = math.radians(self.rotation)  # แปลงองศาเป็นเรเดียน
 
-    #     # ปรับตำแหน่งของกระสุน
-    #     self.x += dx
-    #     self.y += dy
-    #     self.pos = (self.x, self.y)
+        # คำนวณการเปลี่ยนแปลงตำแหน่ง
+        dx = self.velocity * dt * math.cos(angle_rad)  # การเคลื่อนที่ในแนวนอน
+        dy = self.velocity * dt * math.sin(angle_rad)  # การเคลื่อนที่ในแนวตั้ง
+
+        # ปรับตำแหน่งของกระสุน
+        self.x += dx
+        self.y += dy
+        self.pos = (self.x, self.y)
 
 #Player
 class Player(Widget):
