@@ -67,12 +67,17 @@
 
 #On Game Screen
 <GameScreen>:
+
     #BackGround
     Image:
         source: 'assets/bg.png'
         # allow_stretch: True  # ทำให้ภาพขยายได้
         # keep_ratio: False  # ปิดการรักษาสัดส่วนของภาพ
     
+    FloatLayout:
+        Player:
+            id: player
+
     # --- UI ---
     Image: #UI (under right)
         source: 'assets/under_ui.png'
@@ -89,7 +94,3 @@
         size_hint: 0.2, 0.2
         pos_hint: {'center_x': 0.5, 'center_y': 0.8}
         on_press: app.root.current = 'main_menu'
-
-    FloatLayout:
-        Player:
-            id: player

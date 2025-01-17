@@ -138,7 +138,7 @@ class Player(Widget):
         currentx, currenty = self.pos
         
         #Setup
-        step_size = 100 * dt
+        step_size = 300 * dt
         step_rotate = 150 * dt
         
         if "w" in self.keysPressed:
