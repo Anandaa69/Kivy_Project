@@ -25,22 +25,22 @@ class MainMenu(Screen):
 class GameScreen(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.enemies = [] # Store all enemy objects
+        self.enemies = dict() # Store all enemy objects
         Clock.schedule_interval(self.update, 1/60)
 
     def create_enemy(self, pos=(500, 500), enemy_id=None):
         print(f'Create Enemy at {pos}')
         enemy = Enemy(pos=pos, enemy_id=enemy_id)
         self.add_widget(enemy)
-        self.enemies.append(enemy) # add dynamic enemy to list 
-
+        self.enemies[enemy_id] = enemy # add dynamic enemy to list 
+        print(self.enemies)
     #Give ID to enemy
     def create_multiple_enemies(self, positions):
         for i, pos in enumerate(positions):
             self.create_enemy(pos=pos, enemy_id=f"Enemy_{i+1}")
        
     def update(self, dt):
-        for enemy in self.enemies:
+        for key, enemy in self.enemies.items():
             if enemy.enable == True:
                 enemy.follow_player(self.ids.player.pos, (self.ids.player.base_width, self.ids.player.base_height), dt)
         
@@ -50,7 +50,7 @@ class GameScreen(Screen):
         #Create multiplae enemies here
         positions = [(500, 500), (600, 400), (700, 300), (400, 600)]
         self.create_multiple_enemies(positions)
-        for enemy in self.enemies:
+        for key ,enemy in self.enemies.items():
             enemy.enable_enemy()
         
     def on_leave(self):
@@ -73,6 +73,14 @@ class GameScreen(Screen):
     def minus_player_hp(self, enemy_id):
         self.ids.player.hp_left -= 1
         print(f'Enemy id {enemy_id} attack!')
+        
+        #Make Delay Enemy
+        self.enemies[enemy_id].disable_enemy()
+        
+        Clock.schedule_once(lambda dt: self.re_enable_enemy(enemy_id), 4)
+
+    def re_enable_enemy(self, enemy_id):
+        self.enemies[enemy_id].enable_enemy()
         
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
@@ -158,8 +166,9 @@ class Enemy(Widget):
         else:
             self.attack_player()      
             #Make Delay
-            self.disable_enemy()
-            Clock.schedule_once(self.re_enable_enemy, 5)
+            # self.disable_enemy()
+            # self.parent.ids.player.disable_keyboard()
+            # Clock.schedule_once(self.re_enable, 2)
             
     def collide_with_player(self, new_pos, player_pos, player_size):
         r1x = new_pos[0]
@@ -185,10 +194,6 @@ class Enemy(Widget):
             return
         self.parent.minus_player_hp(self.enemy_id)  # call fn() in GameScreen
 
-    def re_enable_enemy(self, dt):
-        # wait 5 secound and run
-        print(f'{self.enemy_id} starts moving again!')
-        self.enable_enemy()
 
 class Player(Widget):
     rotation = NumericProperty(0)
