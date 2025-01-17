@@ -95,6 +95,7 @@ class Bullet(Widget):
 
 class Enemy(Widget):
     rotation = NumericProperty(0)
+    health_enemy_left = NumericProperty(5)
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -137,6 +138,7 @@ class Enemy(Widget):
         r2h = player_size[1]
 
         if (r1x < r2x + r2w and r1x + r1w > r2x and r1y < r2y + r2h and r1y + r1h > r2y):
+            print('You has been Attack!!')
             return True
         else:
             return False
@@ -160,7 +162,8 @@ class Player(Widget):
         self._keyboard = None
             
         Clock.schedule_interval(self.move_step, 1/60)
-        
+        Clock.schedule_interval(self.debug_values, 1/60)
+
     def enable_keyboard(self):
         if not self._keyboard:
             self._keyboard = Window.request_keyboard(self._on_keyboard_closed, self)
@@ -243,6 +246,17 @@ class Player(Widget):
         
         return False
 
+    def debug_values(self, dt):
+        #Check Player Health
+        if self.health_left > 99:
+            self.health_left = 99
+        if self.health_left < 0:
+            self.health_left = 0
+        #Check Bullet Left
+        if self.bullet_left > 99:
+            self.bullet_left = 99
+        if self.bullet_left < 0:
+            self.bullet_left = 0
         
 # Main App
 class MyGameApp(App):
