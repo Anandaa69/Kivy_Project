@@ -149,6 +149,7 @@ class Enemy(Widget):
 class Player(Widget):
     rotation = NumericProperty(0)
     bullet_left = NumericProperty(20)
+    health_left = NumericProperty(5)
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)     
@@ -177,8 +178,7 @@ class Player(Widget):
             self.keysPressed = set()
             
             print('Disable Player!')
-            
-    #on keyboard input
+
     def _on_keyboard_closed(self): 
         self.disable_keyboard()
         
@@ -242,6 +242,7 @@ class Player(Widget):
             return True
         
         return False
+
         
 # Main App
 class MyGameApp(App):
