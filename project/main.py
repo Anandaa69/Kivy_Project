@@ -27,15 +27,16 @@ class GameScreen(Screen):
         Clock.schedule_interval(self.update, 1/60)
     
     def update(self, dt):
-        self.ids.E_1.follow_player(self.ids.player.pos, (self.ids.player.base_width, self.ids.player.base_height), dt)
+        if self.ids.E_1.enable == True:
+            self.ids.E_1.follow_player(self.ids.player.pos, (self.ids.player.base_width, self.ids.player.base_height), dt)
         
     def on_enter(self):
         self.ids.player.enable_keyboard()
-        
+        self.ids.E_1.enable_enemy()
         
     def on_leave(self):
         self.ids.player.disable_keyboard()
-        
+        self.ids.E_1.disable_enemy()
         
         #reset value
         # --- Player ---
@@ -98,12 +99,15 @@ class Enemy(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.pos = 500, 500
-    
+        self.enable = False
+        
     def enable_enemy(self):
-        pass
-    
+        self.enable = True
+        print('Enable enemy!')
+        
     def disable_enemy(self):
-        pass
+        self.enable = False
+        print('Eisable enemy!')
     
     def follow_player(self, player_pos, player_size, dt):
         # cal angle between player and enemy
@@ -157,19 +161,23 @@ class Player(Widget):
         Clock.schedule_interval(self.move_step, 1/60)
         
     def enable_keyboard(self):
-        if not self._keyboard:  # เชื่อมโยงคีย์บอร์ดเฉพาะเมื่อยังไม่ได้เชื่อม
+        if not self._keyboard:
             self._keyboard = Window.request_keyboard(self._on_keyboard_closed, self)
             self._keyboard.bind(on_key_down=self._on_key_down)
             self._keyboard.bind(on_key_up=self._on_key_up)
-
+            print('Enable Player!')
+            
     def disable_keyboard(self):
-        if self._keyboard:  # ยกเลิกการเชื่อมโยงคีย์บอร์ด
+        if self._keyboard:
             self._keyboard.unbind(on_key_down=self._on_key_down)
             self._keyboard.unbind(on_key_up=self._on_key_up)
             self._keyboard = None
             
             #set to None
             self.keysPressed = set()
+            
+            print('Disable Player!')
+            
     #on keyboard input
     def _on_keyboard_closed(self): 
         self.disable_keyboard()
