@@ -67,21 +67,22 @@
 
 #On Game Screen
 <GameScreen>:
-    #BG
+    #BackGround
     Image:
         source: 'assets/bg.png'
         # allow_stretch: True  # ทำให้ภาพขยายได้
         # keep_ratio: False  # ปิดการรักษาสัดส่วนของภาพ
     
     # --- UI ---
-    Image: #UI-Under
+    Image: #UI- under right
         source: 'assets/under_ui.png'
         size_hint: None, None  # กำหนดขนาดแบบคงที่
         size: self.texture_size  # ใช้ขนาดของภาพจริง
         pos_hint: {'right': 0.94, 'y': 0.015}  # ชิดขอบขวาและอยู่ล่างสุด
     Label:
         text: str(player.bullet_left)
-
+        font_size: 40
+        pos_hint: {'center_x': 0.742, 'center_y': 0.06}
     FloatLayout:
         Player:
             id: player
