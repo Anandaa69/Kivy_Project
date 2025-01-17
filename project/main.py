@@ -17,6 +17,7 @@ from kivy.clock import Clock
 from kivy.properties import NumericProperty
 from kivy.graphics import Ellipse, Line
 import math
+import time
 
 class MainMenu(Screen):
     pass
@@ -24,19 +25,34 @@ class MainMenu(Screen):
 class GameScreen(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
+        self.enemies = [] # Store all enemy objects
         Clock.schedule_interval(self.update, 1/60)
-    
+
+    def create_enemy(self, pos=(500, 500)):
+        print('create')
+        enemy = Enemy(pos=pos)
+        self.add_widget(enemy)
+        self.enemies.append(enemy) # add dynamic enemy to list 
+        
     def update(self, dt):
-        if self.ids.E_1.enable == True:
-            self.ids.E_1.follow_player(self.ids.player.pos, (self.ids.player.base_width, self.ids.player.base_height), dt)
+        for enemy in self.enemies:
+            if enemy.enable == True:
+                enemy.follow_player(self.ids.player.pos, (self.ids.player.base_width, self.ids.player.base_height), dt)
         
     def on_enter(self):
         self.ids.player.enable_keyboard()
-        self.ids.E_1.enable_enemy()
+        
+        #Create multiplae enemies here
+        self.create_enemy((500, 500))
+        self.create_enemy((600, 400))
+        self.create_enemy((400, 600))
+        for enemy in self.enemies:
+            enemy.enable_enemy()
         
     def on_leave(self):
         self.ids.player.disable_keyboard()
-        self.ids.E_1.disable_enemy()
+        for enemy in self.enemies:
+            enemy.disable_enemy()
         
         #reset value
         # --- Player ---
@@ -44,7 +60,11 @@ class GameScreen(Screen):
         self.ids.player.bullet_left = 20
         self.ids.player.rotation = 0
         # -- Enemy ---
-        self.ids.E_1.pos = (500, 500)
+        
+        # Reset enemies and remove them from the screen
+        for enemy in self.enemies:
+            self.remove_widget(enemy)
+        self.enemies.clear()  # Clear the list
         
     def minus_player_hp(self):
         self.ids.player.hp_left -= 1
@@ -102,7 +122,6 @@ class Enemy(Widget):
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.pos = 500, 500
         self.enable = False
         self.get_player = False
 
