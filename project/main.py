@@ -27,7 +27,7 @@ class GameScreen(Screen):
         Clock.schedule_interval(self.update, 1/60)
     
     def update(self, dt):
-        self.ids.E_1.follow_player(self.ids.player.pos)
+        self.ids.E_1.follow_player(self.ids.player.pos, dt)
         
     def on_enter(self):
         self.ids.player.enable_keyboard()
@@ -41,7 +41,6 @@ class GameScreen(Screen):
         self.ids.player.bullet_left = 20
         self.ids.player.rotation = 0
         # -- Enemy ---
-        
         
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
@@ -95,14 +94,22 @@ class Enemy(Widget):
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-    
-    def follow_player(self, player_pos):
+        self.pos = 500, 500
+        
+    def follow_player(self, player_pos, dt):
         # cal angle between player and enemy
         dx = player_pos[0] - self.pos[0]
         dy = player_pos[1] - self.pos[1]
         angle = math.atan2(dy, dx)  # คำนวณมุมจากตำแหน่ง X, Y ของผู้เล่นกับศัตรู
         self.rotation = math.degrees(angle)  # แปลงจากเรเดียนเป็นองศา
-    
+
+        step_size = 50 * dt
+        move_x = step_size * math.cos(angle)  # คำนวณการเคลื่อนที่ในแนวแกน X
+        move_y = step_size * math.sin(angle)  # คำนวณการเคลื่อนที่ในแนวแกน Y
+
+        # อัพเดตตำแหน่งของศัตรู
+        self.pos = (self.pos[0] + move_x, self.pos[1] + move_y)
+        
     def attack_player(self):
         pass
 
