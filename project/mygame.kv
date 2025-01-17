@@ -74,11 +74,11 @@
         # keep_ratio: False  # ปิดการรักษาสัดส่วนของภาพ
     
     # --- UI ---
-    Image: #UI- under right
+    Image: #UI (under right)
         source: 'assets/under_ui.png'
-        size_hint: None, None  # กำหนดขนาดแบบคงที่
-        size: self.texture_size  # ใช้ขนาดของภาพจริง
-        pos_hint: {'right': 0.94, 'y': 0.015}  # ชิดขอบขวาและอยู่ล่างสุด
+        size_hint: None, None
+        size: self.texture_size
+        pos_hint: {'right': 0.94, 'y': 0.015} 
     Label:
         text: str(player.bullet_left)
         font_size: 40

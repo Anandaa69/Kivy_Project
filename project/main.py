@@ -168,9 +168,9 @@ class Player(Widget):
 
     def collide_with_wall(self, new_pos):
         x, y = new_pos
-        if x < 0 or x + self.base_width > Window.width:
+        if x < 42 or x + self.base_width > Window.width - 42:
             return True
-        if y < 0 or y + self.base_height > Window.height:
+        if y < 42 or y + self.base_height > Window.height - 42:
             return True
         
         return False
