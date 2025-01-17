@@ -17,7 +17,7 @@ from kivy.clock import Clock
 from kivy.properties import NumericProperty
 from kivy.graphics import Ellipse, Line
 import math
-import time
+from random import randint
 
 class MainMenu(Screen):
     pass
@@ -25,19 +25,20 @@ class MainMenu(Screen):
 class GameScreen(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
+        self.random_between = (20, 70)
         self.enemies = dict() # Store all enemy objects
         Clock.schedule_interval(self.update, 1/60)
 
-    def create_enemy(self, pos=(500, 500), enemy_id=None):
-        print(f'Create Enemy at {pos}')
-        enemy = Enemy(pos=pos, enemy_id=enemy_id)
+    def create_enemy(self, pos=(500, 500), speed=0 ,enemy_id=None):
+        print(f'Create Enemy at {pos} and speed {speed}')
+        enemy = Enemy(pos=pos, speed=speed,enemy_id=enemy_id)
         self.add_widget(enemy)
         self.enemies[enemy_id] = enemy # add dynamic enemy to list 
-        print(self.enemies)
+        
     #Give ID to enemy
-    def create_multiple_enemies(self, positions):
+    def create_multiple_enemies(self, positions, speed):
         for i, pos in enumerate(positions):
-            self.create_enemy(pos=pos, enemy_id=f"Enemy_{i+1}")
+            self.create_enemy(pos=pos, speed=speed[i], enemy_id=f"Enemy_{i+1}")
        
     def update(self, dt):
         for key, enemy in self.enemies.items():
@@ -49,7 +50,8 @@ class GameScreen(Screen):
         
         #Create multiplae enemies here
         positions = [(500, 500), (600, 400), (700, 300), (400, 600)]
-        self.create_multiple_enemies(positions)
+        speed = [randint(self.random_between[0], self.random_between[1]) for i in range(len(positions))]
+        self.create_multiple_enemies(positions, speed)
         for key ,enemy in self.enemies.items():
             enemy.enable_enemy()
         
@@ -133,8 +135,10 @@ class Enemy(Widget):
     rotation = NumericProperty(0)
     hp_enemy_left = NumericProperty(5)
     
-    def __init__(self, enemy_id=None, **kwargs):
+    def __init__(self, speed,enemy_id=None, **kwargs):
         super().__init__(**kwargs)
+        #Property
+        self.speed = speed
         self.enemy_id = enemy_id
         self.enable = False
         self.get_player = False
@@ -154,7 +158,7 @@ class Enemy(Widget):
         angle = math.atan2(dy, dx)  # cal rotation of enemy
         self.rotation = math.degrees(angle)
 
-        step_size = 100 * dt
+        step_size = self.speed * dt
         move_x = step_size * math.cos(angle)  # move X
         move_y = step_size * math.sin(angle)  # move Y
 
@@ -164,11 +168,7 @@ class Enemy(Widget):
         if self.collide_with_player(new_pos, player_pos, player_size) == False:
             self.pos = new_pos #Update
         else:
-            self.attack_player()      
-            #Make Delay
-            # self.disable_enemy()
-            # self.parent.ids.player.disable_keyboard()
-            # Clock.schedule_once(self.re_enable, 2)
+            self.attack_player()
             
     def collide_with_player(self, new_pos, player_pos, player_size):
         r1x = new_pos[0]
