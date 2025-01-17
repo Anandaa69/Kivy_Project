@@ -27,7 +27,12 @@ class GameScreen(Screen):
         
     def on_leave(self):
         self.ids.player.disable_keyboard()
-
+        
+        #reset value
+        # --- Player ---
+        self.ids.player.pos = (50, 50)
+        self.ids.player.bullet_left = 20
+        self.ids.player.rotation = 0
         
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
