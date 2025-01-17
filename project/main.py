@@ -27,13 +27,15 @@ class GameScreen(Screen):
         Clock.schedule_interval(self.update, 1/60)
     
     def update(self, dt):
-        self.ids.E_1.follow_player(self.ids.player.pos, dt)
+        self.ids.E_1.follow_player(self.ids.player.pos, (self.ids.player.base_width, self.ids.player.base_height), dt)
         
     def on_enter(self):
         self.ids.player.enable_keyboard()
         
+        
     def on_leave(self):
         self.ids.player.disable_keyboard()
+        
         
         #reset value
         # --- Player ---
@@ -41,6 +43,7 @@ class GameScreen(Screen):
         self.ids.player.bullet_left = 20
         self.ids.player.rotation = 0
         # -- Enemy ---
+        self.ids.E_1.pos = (500, 500)
         
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
@@ -95,20 +98,46 @@ class Enemy(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.pos = 500, 500
-        
-    def follow_player(self, player_pos, dt):
+    
+    def enable_enemy(self):
+        pass
+    
+    def disable_enemy(self):
+        pass
+    
+    def follow_player(self, player_pos, player_size, dt):
         # cal angle between player and enemy
         dx = player_pos[0] - self.pos[0]
         dy = player_pos[1] - self.pos[1]
-        angle = math.atan2(dy, dx)  # คำนวณมุมจากตำแหน่ง X, Y ของผู้เล่นกับศัตรู
-        self.rotation = math.degrees(angle)  # แปลงจากเรเดียนเป็นองศา
+        angle = math.atan2(dy, dx)  # cal rotation of enemy
+        self.rotation = math.degrees(angle)
 
-        step_size = 50 * dt
-        move_x = step_size * math.cos(angle)  # คำนวณการเคลื่อนที่ในแนวแกน X
-        move_y = step_size * math.sin(angle)  # คำนวณการเคลื่อนที่ในแนวแกน Y
+        step_size = 100 * dt
+        move_x = step_size * math.cos(angle)  # move X
+        move_y = step_size * math.sin(angle)  # move Y
 
-        # อัพเดตตำแหน่งของศัตรู
-        self.pos = (self.pos[0] + move_x, self.pos[1] + move_y)
+        # Update position enemy
+        new_pos = (self.pos[0] + move_x, self.pos[1] + move_y)
+        #Check
+        if self.collide_with_player(new_pos, player_pos, player_size) == False:
+            self.pos = new_pos #Update
+
+    def collide_with_player(self, new_pos, player_pos, player_size):
+        r1x = new_pos[0]
+        r1y = new_pos[1]
+        r2x = player_pos[0]
+        r2y = player_pos[1]
+        r1w = self.base_width
+        r1h = self.base_height
+        r2w = player_size[0]
+        r2h = player_size[1]
+
+        if (r1x < r2x + r2w and r1x + r1w > r2x and r1y < r2y + r2h and r1y + r1h > r2y):
+            return True
+        else:
+            return False
+        
+        return False
         
     def attack_player(self):
         pass
