@@ -3,7 +3,7 @@ kivy.require('2.3.1')
 
 from kivy.config import Config
 
-# กำหนดค่าคอนฟิก
+# Screen Config
 Config.set('graphics', 'width', '1280')  # Width of Screen
 Config.set('graphics', 'height', '720')  # Height of Screen
 Config.set('graphics', 'resizable', False)  # Set can't change screen size
@@ -101,7 +101,7 @@ class Player(Widget):
     def _on_key_down(self, keyboard, keycode, text, modifiers):
         self.keysPressed.add(text)
 
-        if text == " ":  # กด spacebar เพื่อยิงกระสุน
+        if text == " ":  # press SpcaeBar to shoot
             if self.bullet_left > 0:
                 self.shoot_bullet()
                 print(self.bullet_left)
