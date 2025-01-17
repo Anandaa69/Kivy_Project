@@ -46,6 +46,9 @@ class GameScreen(Screen):
         # -- Enemy ---
         self.ids.E_1.pos = (500, 500)
         
+    def minus_player_hp(self):
+        self.ids.player.hp_left -= 1
+
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -95,20 +98,21 @@ class Bullet(Widget):
 
 class Enemy(Widget):
     rotation = NumericProperty(0)
-    health_enemy_left = NumericProperty(5)
+    hp_enemy_left = NumericProperty(5)
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.pos = 500, 500
         self.enable = False
-        
+        self.get_player = False
+
     def enable_enemy(self):
         self.enable = True
         print('Enable enemy!')
         
     def disable_enemy(self):
         self.enable = False
-        print('Eisable enemy!')
+        print('Disable enemy!')
     
     def follow_player(self, player_pos, player_size, dt):
         # cal angle between player and enemy
@@ -126,7 +130,9 @@ class Enemy(Widget):
         #Check
         if self.collide_with_player(new_pos, player_pos, player_size) == False:
             self.pos = new_pos #Update
-
+        else:
+            self.attack_player()      
+         
     def collide_with_player(self, new_pos, player_pos, player_size):
         r1x = new_pos[0]
         r1y = new_pos[1]
@@ -138,20 +144,24 @@ class Enemy(Widget):
         r2h = player_size[1]
 
         if (r1x < r2x + r2w and r1x + r1w > r2x and r1y < r2y + r2h and r1y + r1h > r2y):
-            print('You has been Attack!!')
+            self.get_player = True
             return True
         else:
+            self.get_player = False
             return False
         
         return False
         
     def attack_player(self):
-        pass
+        if self.get_player == False:  # debug 
+            return
+        self.parent.minus_player_hp()  # call fn() in GameScreen
+        print("Attacking Player!")
 
 class Player(Widget):
     rotation = NumericProperty(0)
     bullet_left = NumericProperty(20)
-    health_left = NumericProperty(5)
+    hp_left = NumericProperty(1000)
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)     
@@ -247,11 +257,11 @@ class Player(Widget):
         return False
 
     def debug_values(self, dt):
-        #Check Player Health
-        if self.health_left > 99:
-            self.health_left = 99
-        if self.health_left < 0:
-            self.health_left = 0
+        #Check Player hp
+        if self.hp_left > 99:
+            self.hp_left = 99
+        if self.hp_left < 0:
+            self.hp_left = 0
         #Check Bullet Left
         if self.bullet_left > 99:
             self.bullet_left = 99

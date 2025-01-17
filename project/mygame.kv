@@ -90,13 +90,12 @@
         # allow_stretch: True  # ทำให้ภาพขยายได้
         # keep_ratio: False  # ปิดการรักษาสัดส่วนของภาพ
     
-    FloatLayout:
-        Player:
-            id: player
+    Player:
+        id: player
 
-        Enemy:
-            id: E_1
-            pos: self.pos
+    Enemy:
+        id: E_1
+        pos: self.pos
 
     # --- UI ---
     Image: #UI (under right)
@@ -114,7 +113,7 @@
         size: self.texture_size
         pos_hint: {'center_x': 0.08, 'center_y': 0.934}
     Label:
-        text: str(player.health_left)
+        text: str(player.hp_left)
         font_size: 40
         pos_hint: {'center_x': 0.097, 'center_y': 0.934}
     Button:
