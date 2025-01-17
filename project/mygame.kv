@@ -83,6 +83,13 @@
         text: str(player.bullet_left)
         font_size: 40
         pos_hint: {'center_x': 0.742, 'center_y': 0.06}
+
+    Button:
+        text: 'Back'
+        size_hint: 0.2, 0.2
+        pos_hint: {'center_x': 0.5, 'center_y': 0.8}
+        on_press: app.root.current = 'main_menu'
+
     FloatLayout:
         Player:
             id: player

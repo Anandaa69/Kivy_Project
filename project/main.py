@@ -23,11 +23,12 @@ class MainMenu(Screen):
 
 class GameScreen(Screen):        
     def on_enter(self):
-        pass
-    
-    def on_leave(self): 
-        self.ids.player.pos = (0, 0)
+        self.ids.player.enable_keyboard()
+        
+    def on_leave(self):
+        self.ids.player.disable_keyboard()
 
+        
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -78,25 +79,34 @@ class Bullet(Widget):
 class Player(Widget):
     rotation = NumericProperty(0)
     bullet_left = NumericProperty(20)
+    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)     
         #Property
-
-        #Keyboard
-        self._keyboard = Window.request_keyboard(self._on_keyboard_closed, self)
-        self._keyboard.bind(on_key_down=self._on_key_down)
-        self._keyboard.bind(on_key_up=self._on_key_up)
+        self.pos = (50, 50)
     
         self.keysPressed = set()
-
-        self.center_player = list()
-        
-        Clock.schedule_interval(self.move_step, 1/60)
-    #on keyboard input
-    def _on_keyboard_closed(self):
-        self._keyboard.unbind(on_key_down=self._on_key_down)
-        self._keyboard.unbind(on_key_up=self._on_key_up)
         self._keyboard = None
+            
+        Clock.schedule_interval(self.move_step, 1/60)
+        
+    def enable_keyboard(self):
+        if not self._keyboard:  # เชื่อมโยงคีย์บอร์ดเฉพาะเมื่อยังไม่ได้เชื่อม
+            self._keyboard = Window.request_keyboard(self._on_keyboard_closed, self)
+            self._keyboard.bind(on_key_down=self._on_key_down)
+            self._keyboard.bind(on_key_up=self._on_key_up)
+
+    def disable_keyboard(self):
+        if self._keyboard:  # ยกเลิกการเชื่อมโยงคีย์บอร์ด
+            self._keyboard.unbind(on_key_down=self._on_key_down)
+            self._keyboard.unbind(on_key_up=self._on_key_up)
+            self._keyboard = None
+            
+            #set to None
+            self.keysPressed = set()
+    #on keyboard input
+    def _on_keyboard_closed(self): 
+        self.disable_keyboard()
         
     def _on_key_down(self, keyboard, keycode, text, modifiers):
         self.keysPressed.add(text)
@@ -146,9 +156,20 @@ class Player(Widget):
         if "i" in self.keysPressed:
             print(self.bullets)
         
-        #Update
-        self.pos = (currentx, currenty)
+        #Check Collide?
+        new_pos = (currentx, currenty)
+        if self.collide_with_wall(new_pos) == False:
+            self.pos = new_pos #Update
 
+    def collide_with_wall(self, new_pos):
+        x, y = new_pos
+        if x < 0 or x + self.base_width > Window.width:
+            return True
+        if y < 0 or y + self.base_height > Window.height:
+            return True
+        
+        return False
+        
 # Main App
 class MyGameApp(App):
     def build(self):
