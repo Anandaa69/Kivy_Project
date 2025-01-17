@@ -70,9 +70,10 @@ class GameScreen(Screen):
             self.remove_widget(enemy)
         self.enemies.clear()  # Clear the list
         
-    def minus_player_hp(self):
+    def minus_player_hp(self, enemy_id):
         self.ids.player.hp_left -= 1
-
+        print(f'Enemy id {enemy_id} attack!')
+        
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -156,7 +157,10 @@ class Enemy(Widget):
             self.pos = new_pos #Update
         else:
             self.attack_player()      
-         
+            #Make Delay
+            self.disable_enemy()
+            Clock.schedule_once(self.re_enable_enemy, 5)
+            
     def collide_with_player(self, new_pos, player_pos, player_size):
         r1x = new_pos[0]
         r1y = new_pos[1]
@@ -179,8 +183,12 @@ class Enemy(Widget):
     def attack_player(self):
         if self.get_player == False:  # debug 
             return
-        self.parent.minus_player_hp()  # call fn() in GameScreen
-        print(f"Enemy {self.enemy_id} Attacking!")
+        self.parent.minus_player_hp(self.enemy_id)  # call fn() in GameScreen
+
+    def re_enable_enemy(self, dt):
+        # wait 5 secound and run
+        print(f'{self.enemy_id} starts moving again!')
+        self.enable_enemy()
 
 class Player(Widget):
     rotation = NumericProperty(0)
