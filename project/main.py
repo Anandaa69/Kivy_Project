@@ -21,7 +21,14 @@ import math
 class MainMenu(Screen):
     pass
 
-class GameScreen(Screen):        
+class GameScreen(Screen):
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        Clock.schedule_interval(self.update, 1/60)
+    
+    def update(self, dt):
+        self.ids.E_1.follow_player(self.ids.player.pos)
+        
     def on_enter(self):
         self.ids.player.enable_keyboard()
         
@@ -33,6 +40,8 @@ class GameScreen(Screen):
         self.ids.player.pos = (50, 50)
         self.ids.player.bullet_left = 20
         self.ids.player.rotation = 0
+        # -- Enemy ---
+        
         
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
@@ -80,6 +89,22 @@ class Bullet(Widget):
             self.parent.remove_widget(self)
         
         Clock.unschedule(self.move_bullet)
+
+class Enemy(Widget):
+    rotation = NumericProperty(0)
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+    
+    def follow_player(self, player_pos):
+        # cal angle between player and enemy
+        dx = player_pos[0] - self.pos[0]
+        dy = player_pos[1] - self.pos[1]
+        angle = math.atan2(dy, dx)  # คำนวณมุมจากตำแหน่ง X, Y ของผู้เล่นกับศัตรู
+        self.rotation = math.degrees(angle)  # แปลงจากเรเดียนเป็นองศา
+    
+    def attack_player(self):
+        pass
 
 class Player(Widget):
     rotation = NumericProperty(0)
@@ -132,7 +157,6 @@ class Player(Widget):
         bullet = Bullet(self.pos[0]+self.base_width/2, self.pos[1]+self.base_height/2, self.rotation)
         self.parent.add_widget(bullet)  # add bullet to screen
         self.bullet_left -= 1
-        # self.bullets.append(bullet)
 
     def move_step(self, dt):
         currentx, currenty = self.pos
