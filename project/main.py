@@ -28,12 +28,17 @@ class GameScreen(Screen):
         self.enemies = [] # Store all enemy objects
         Clock.schedule_interval(self.update, 1/60)
 
-    def create_enemy(self, pos=(500, 500)):
-        print('create')
-        enemy = Enemy(pos=pos)
+    def create_enemy(self, pos=(500, 500), enemy_id=None):
+        print(f'Create Enemy at {pos}')
+        enemy = Enemy(pos=pos, enemy_id=enemy_id)
         self.add_widget(enemy)
         self.enemies.append(enemy) # add dynamic enemy to list 
-        
+
+    #Give ID to enemy
+    def create_multiple_enemies(self, positions):
+        for i, pos in enumerate(positions):
+            self.create_enemy(pos=pos, enemy_id=f"Enemy_{i+1}")
+       
     def update(self, dt):
         for enemy in self.enemies:
             if enemy.enable == True:
@@ -43,9 +48,8 @@ class GameScreen(Screen):
         self.ids.player.enable_keyboard()
         
         #Create multiplae enemies here
-        self.create_enemy((500, 500))
-        self.create_enemy((600, 400))
-        self.create_enemy((400, 600))
+        positions = [(500, 500), (600, 400), (700, 300), (400, 600)]
+        self.create_multiple_enemies(positions)
         for enemy in self.enemies:
             enemy.enable_enemy()
         
@@ -120,18 +124,19 @@ class Enemy(Widget):
     rotation = NumericProperty(0)
     hp_enemy_left = NumericProperty(5)
     
-    def __init__(self, **kwargs):
+    def __init__(self, enemy_id=None, **kwargs):
         super().__init__(**kwargs)
+        self.enemy_id = enemy_id
         self.enable = False
         self.get_player = False
 
     def enable_enemy(self):
         self.enable = True
-        print('Enable enemy!')
+        print(f'Enable enemy! {self.enemy_id}')
         
     def disable_enemy(self):
         self.enable = False
-        print('Disable enemy!')
+        print(f'Disable enemy! {self.enemy_id}')
     
     def follow_player(self, player_pos, player_size, dt):
         # cal angle between player and enemy
@@ -175,7 +180,7 @@ class Enemy(Widget):
         if self.get_player == False:  # debug 
             return
         self.parent.minus_player_hp()  # call fn() in GameScreen
-        print("Attacking Player!")
+        print(f"Enemy {self.enemy_id} Attacking!")
 
 class Player(Widget):
     rotation = NumericProperty(0)
