@@ -4,9 +4,9 @@ kivy.require('2.3.1')
 from kivy.config import Config
 
 # กำหนดค่าคอนฟิก
-Config.set('graphics', 'width', '1280')  # ความกว้างของหน้าต่าง
-Config.set('graphics', 'height', '720')  # ความสูงของหน้าต่าง
-Config.set('graphics', 'resizable', False)  # ปิดการปรับขนาดหน้าต่าง
+Config.set('graphics', 'width', '1280')  # Width of Screen
+Config.set('graphics', 'height', '720')  # Height of Screen
+Config.set('graphics', 'resizable', False)  # Set can't change screen size
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
@@ -18,12 +18,10 @@ from kivy.properties import NumericProperty
 from kivy.graphics import Ellipse, Line
 import math
 
-# Main Menu
 class MainMenu(Screen):
     pass
 
-# In Game
-class GameScreen(Screen):
+class GameScreen(Screen):        
     def on_enter(self):
         pass
     
@@ -31,8 +29,8 @@ class GameScreen(Screen):
         self.ids.player.pos = (0, 0)
 
 class SettingScreen(Screen):
-    def __init__(self, **kw):
-        super().__init__(**kw)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.select = 0 # 0 --> 1280 , 1 --> 1980
 
     def select_screen(self, value):
@@ -76,12 +74,14 @@ class Bullet(Widget):
             self.parent.remove_widget(self)
         
         Clock.unschedule(self.move_bullet)
-        
-#Player
+
 class Player(Widget):
     rotation = NumericProperty(0)
+    bullet_left = NumericProperty(20)
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)        
+        super().__init__(**kwargs)     
+        #Property
+
         #Keyboard
         self._keyboard = Window.request_keyboard(self._on_keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_key_down)
@@ -102,25 +102,29 @@ class Player(Widget):
         self.keysPressed.add(text)
 
         if text == " ":  # กด spacebar เพื่อยิงกระสุน
-            self.shoot_bullet()
-    
+            if self.bullet_left > 0:
+                self.shoot_bullet()
+                print(self.bullet_left)
+            else:
+                print('Out of Bullet!') 
+                
     def _on_key_up(self, keyboard, keycode):
         text = keycode[1]
         if text in self.keysPressed:
             self.keysPressed.remove(text)
 
     def shoot_bullet(self):
-        # ยิงกระสุนไปตามทิศทางที่ผู้เล่นหมุน 
         bullet = Bullet(self.pos[0]+self.base_width/2, self.pos[1]+self.base_height/2, self.rotation)
-        self.parent.add_widget(bullet)  # เพิ่มกระสุนไปยังหน้าจอ
-        # self.bullets.append(bullet)  # เก็บกระสุนไว้
+        self.parent.add_widget(bullet)  # add bullet to screen
+        self.bullet_left -= 1
+        # self.bullets.append(bullet)
 
     def move_step(self, dt):
         currentx, currenty = self.pos
         
         #Setup
         step_size = 100 * dt
-        step_rotate = 190 * dt
+        step_rotate = 150 * dt
         
         if "w" in self.keysPressed:
             currenty += step_size

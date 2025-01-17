@@ -35,13 +35,13 @@
             text: 'Start Game'
             size_hint: 0.5, 0.2
             pos_hint: {'center_x': 0.5}
-            on_press: app.root.current = 'game'  # สลับไปที่ GameScreen
+            on_press: app.root.current = 'game'  # Go to GameScreen
         
         Button:
             text: 'Setting'
             size_hint: 0.5, 0.2
             pos_hint: {'center_x': 0.5}
-            on_press: app.root.current = 'setting_menu'  # สลับไปที่ GameScreen
+            on_press: app.root.current = 'setting_menu'  # Go to GameScreen
 
 <SettingScreen>:
     BoxLayout:
@@ -67,10 +67,21 @@
 
 #On Game Screen
 <GameScreen>:
+    #BG
     Image:
         source: 'assets/bg.png'
         # allow_stretch: True  # ทำให้ภาพขยายได้
         # keep_ratio: False  # ปิดการรักษาสัดส่วนของภาพ
+    
+    # --- UI ---
+    Image: #UI-Under
+        source: 'assets/under_ui.png'
+        size_hint: None, None  # กำหนดขนาดแบบคงที่
+        size: self.texture_size  # ใช้ขนาดของภาพจริง
+        pos_hint: {'right': 0.94, 'y': 0.015}  # ชิดขอบขวาและอยู่ล่างสุด
+    Label:
+        text: str(player.bullet_left)
+
     FloatLayout:
         Player:
             id: player
