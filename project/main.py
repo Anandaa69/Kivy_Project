@@ -30,6 +30,7 @@ class GameScreen(Screen):
         super().__init__(**kw)
         self.random_between = (20, 70)
         self.bullet_damage = 5
+        self.enemy_damage = 20
         
         self.enemies = dict() # Store all enemy objects
         self.all_items = dict()
@@ -80,6 +81,8 @@ class GameScreen(Screen):
         self.ids.player.bullet_left = 20
         self.ids.player.rotation = 0
         self.ids.player.score = 0
+        self.ids.player.hp_left = self.ids.player.hp_max
+        self.ids.player.heal_item_left = 0
         # --- Enemys ---
         
         # --- Items ---
@@ -93,7 +96,7 @@ class GameScreen(Screen):
         self.enemies.clear()  # Clear the list
         
     def minus_player_hp(self, enemy_id):
-        self.ids.player.hp_left -= 1
+        self.ids.player.hp_left -= self.enemy_damage
         print(f'Enemy id {enemy_id} attack!')
 
         #Make Delay Enemy
@@ -277,7 +280,7 @@ class Enemy(Widget):
 class Player(Widget):
     rotation = NumericProperty(0)
     bullet_left = NumericProperty(20)
-    hp_left = NumericProperty(1000)
+    hp_left = NumericProperty(200)
     score = NumericProperty(0)
     heal_item_left = NumericProperty(0)
     
@@ -286,7 +289,9 @@ class Player(Widget):
         #Property
         self.gun_type = "shotgun"
         self.pos = (50, 50)
-    
+        self.hp_max = 100
+        self.heal_size = 20 # effect of heal item
+        
         self.keysPressed = set()
         self._keyboard = None
             
@@ -353,6 +358,9 @@ class Player(Widget):
             self.rotation += step_rotate
         if "k" in self.keysPressed:
             self.rotation -= step_rotate
+        if "h" in self.keysPressed:
+            self.use_heal_item()    
+            
         #Check
         if "1" in self.keysPressed:
             self.gun_select("shotgun")
@@ -375,8 +383,8 @@ class Player(Widget):
 
     def debug_values(self, dt):
         #Check Player hp
-        if self.hp_left > 200:
-            self.hp_left = 200
+        if self.hp_left > self.hp_max:
+            self.hp_left = self.hp_max
         if self.hp_left < 0:
             self.hp_left = 0
         #Check Bullet Left
@@ -416,7 +424,13 @@ class Player(Widget):
 
             if (r1x < r2x + r2w and r1x + r1w > r2x and r1y < r2y + r2h and r1y + r1h > r2y):
                 item.add_to_player(self)
-    
+
+    def use_heal_item(self):
+        if self.heal_item_left > 0 and self.hp_left < self.hp_max and self.hp_left + self.heal_size <= self.hp_max:
+            print('Use Heal Item!')
+            self.heal_item_left -= 1
+            self.hp_left += 20
+
 class Heal_item(Widget):
     def __init__(self, item_id,**kwargs):
         super().__init__(**kwargs)
