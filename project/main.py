@@ -102,7 +102,7 @@ class GameScreen(Screen):
         if self.enemies[enemy_id].hp_left != 0:
             self.enemies[enemy_id].hp_left -= self.bullet_damage
             print(f'subtrack enemy {enemy_id} | HP left = {self.enemies[enemy_id].hp_left}')
-            if self.enemies[enemy_id].hp_left >= 0:
+            if self.enemies[enemy_id].hp_left == 0:
                 self.enemies[enemy_id].disable_enemy()
 
 class SettingScreen(Screen):
@@ -260,6 +260,7 @@ class Player(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)     
         #Property
+        self.gun_type = "shotgun"
         self.pos = (50, 50)
     
         self.keysPressed = set()
@@ -329,13 +330,13 @@ class Player(Widget):
         if "k" in self.keysPressed:
             self.rotation -= step_rotate
         #Check
-        if "l" in self.keysPressed:
-            print(self.rotation)
-            print('pos =',self.pos)
-            print('size =',self.size)
-        if "i" in self.keysPressed:
-            print(self.bullets)
-        
+        if "1" in self.keysPressed:
+            self.gun_select("shotgun")
+            print('Swap to Shotgun')
+        if "2" in self.keysPressed:
+            self.gun_select("pistol")
+            print('Swap to Pistol')
+
         #Check Collide?
         new_pos = (currentx, currenty)
         if self.collide_with_wall(new_pos) == False:
@@ -361,6 +362,14 @@ class Player(Widget):
             self.bullet_left = 99
         if self.bullet_left < 0:
             self.bullet_left = 0
+    
+    def gun_select(self, gun):
+        if gun == "shotgun":
+            self.gun_type = gun
+            self.parent.bullet_damage = 5
+        elif gun == "pistol":
+            self.gun_type = gun
+            self.parent.bullet_damage = 1
         
 # Main App
 class MyGameApp(App):
