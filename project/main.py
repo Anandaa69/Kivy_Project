@@ -44,7 +44,8 @@ class GameScreen(Screen):
         for key, enemy in self.enemies.items():
             if enemy.enable == True:
                 enemy.follow_player(self.ids.player.pos, (self.ids.player.base_width, self.ids.player.base_height), dt)
-        
+
+                    
     def on_enter(self):
         self.ids.player.enable_keyboard()
         
@@ -57,7 +58,7 @@ class GameScreen(Screen):
         
     def on_leave(self):
         self.ids.player.disable_keyboard()
-        for enemy in self.enemies:
+        for key, enemy in self.enemies.items():
             enemy.disable_enemy()
         
         #reset value
@@ -68,14 +69,14 @@ class GameScreen(Screen):
         # -- Enemy ---
         
         # Reset enemies and remove them from the screen
-        for enemy in self.enemies:
+        for key, enemy in self.enemies.items():
             self.remove_widget(enemy)
         self.enemies.clear()  # Clear the list
         
     def minus_player_hp(self, enemy_id):
         self.ids.player.hp_left -= 1
         print(f'Enemy id {enemy_id} attack!')
-        
+
         #Make Delay Enemy
         self.enemies[enemy_id].disable_enemy()
         
@@ -83,7 +84,7 @@ class GameScreen(Screen):
 
     def re_enable_enemy(self, enemy_id):
         self.enemies[enemy_id].enable_enemy()
-        
+
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -101,14 +102,13 @@ class SettingScreen(Screen):
 class Bullet(Widget):
     def __init__(self, x, y, rotation, **kwargs):
         super().__init__(**kwargs)
-        self.size = (10, 10)
         self.pos = (x, y)
         self.rotation = rotation
         self.velocity = 500  # Speed
 
         # Update frame by frame
         Clock.schedule_interval(self.move_bullet, 1/60)
-
+        
     def move_bullet(self, dt):
         # Bullet path cal
         angle_rad = math.radians(self.rotation)
@@ -120,11 +120,38 @@ class Bullet(Widget):
         self.x += dx
         self.y += dy
         self.pos = (self.x, self.y)
-
-        #Check Collide with Wall
+    
+        #Check Collide
+        for key, enemy in self.parent.enemies.items():
+            if self.collide_with_enemy(enemy.pos, (enemy.base_width, enemy.base_height)) == True:
+                print(f'enemy {enemy.enemy_id} = {enemy.pos}')
+                print(f'DIEEEEEE {enemy.enemy_id}')
+                self.remove_bullet()
+        
+        #Check Collind with wall
         if self.x < 42 or self.x > Window.width-42 or self.y < 42 or self.y > Window.height-42: # 42 mean pixel of width and height of wall in background
             self.remove_bullet()
         
+
+    # True False
+    def collide_with_enemy(self, enemy_pos, enemy_size):
+        r1x = self.x
+        r1y = self.y
+        r2x = enemy_pos[0]
+        r2y = enemy_pos[1]
+        r1w = self.base_width
+        r1h = self.base_height
+        r2w = enemy_size[0]
+        r2h = enemy_size[1]
+
+        if (r1x < r2x + r2w and r1x + r1w > r2x and r1y < r2y + r2h and r1y + r1h > r2y):
+            # self.get_player = True
+            return True
+        else:
+            # self.get_player = False
+            return False
+
+
     def remove_bullet(self):
         if self.parent:
             self.parent.remove_widget(self)
@@ -186,8 +213,6 @@ class Enemy(Widget):
         else:
             self.get_player = False
             return False
-        
-        return False
         
     def attack_player(self):
         if self.get_player == False:  # debug 
@@ -295,8 +320,8 @@ class Player(Widget):
 
     def debug_values(self, dt):
         #Check Player hp
-        if self.hp_left > 99:
-            self.hp_left = 99
+        if self.hp_left > 200:
+            self.hp_left = 200
         if self.hp_left < 0:
             self.hp_left = 0
         #Check Bullet Left

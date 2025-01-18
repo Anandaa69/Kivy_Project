@@ -32,11 +32,13 @@
         PopMatrix
 
 <Bullet>:
+    base_width: 10
+    base_height: 10
     canvas:
         Ellipse:
             source: 'assets/bullet.png'
             pos: self.pos
-            size: 10, 10
+            size: self.base_width, self.base_height
 
 #On MainMenu Screen
 <MainMenu>:
