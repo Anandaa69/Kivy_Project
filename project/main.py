@@ -78,6 +78,7 @@ class GameScreen(Screen):
         self.ids.player.pos = (50, 50)
         self.ids.player.bullet_left = 20
         self.ids.player.rotation = 0
+        self.ids.player.score = 0
         # -- Enemy ---
         
         # Reset enemies and remove them from the screen
