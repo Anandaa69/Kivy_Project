@@ -368,7 +368,7 @@ class Player(Widget):
             self.parent.bullet_damage = 5
         elif gun == "pistol":
             self.gun_type = gun
-            self.parent.bullet_damage = 1
+            self.parent.bullet_damage = 0.5
         
 # Main App
 class MyGameApp(App):
