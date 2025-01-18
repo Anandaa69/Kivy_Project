@@ -279,6 +279,7 @@ class Player(Widget):
     bullet_left = NumericProperty(20)
     hp_left = NumericProperty(1000)
     score = NumericProperty(0)
+    heal_item_left = NumericProperty(0)
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)     
@@ -290,6 +291,7 @@ class Player(Widget):
         self._keyboard = None
             
         Clock.schedule_interval(self.move_step, 1/60)
+        Clock.schedule_interval(self.check_collide_item, 1/60)
         Clock.schedule_interval(self.debug_values, 1/60)
 
     def enable_keyboard(self):
@@ -382,6 +384,12 @@ class Player(Widget):
             self.bullet_left = 99
         if self.bullet_left < 0:
             self.bullet_left = 0
+        #Check heal item left
+        if self.heal_item_left > 99:
+            self.heal_item_left < 99
+        if self.heal_item_left < 0:
+            self.heal_item_left = 0
+    
     
     def gun_select(self, gun):
         if gun == "shotgun":
@@ -395,15 +403,45 @@ class Player(Widget):
 
             self.parent.ids.select_line.pos_hint = {'center_x': (62.5+94)/1280, 'center_y': 0.065}
 
+    def check_collide_item(self, dt): #update
+        for key, item in list(self.parent.all_items.items()):
+            r1x = self.x
+            r1y = self.y
+            r2x = item.x
+            r2y = item.y
+            r1w = self.base_width
+            r1h = self.base_height
+            r2w = item.base_width
+            r2h = item.base_height
+
+            if (r1x < r2x + r2w and r1x + r1w > r2x and r1y < r2y + r2h and r1y + r1h > r2y):
+                item.add_to_player(self)
+    
 class Heal_item(Widget):
     def __init__(self, item_id,**kwargs):
         super().__init__(**kwargs)
         self.item_id = item_id
+
+    def add_to_player(self, player):
+        player.heal_item_left += 1
+        self.del_item()
+        
+    def del_item(self):
+        del self.parent.all_items[self.item_id] # del self in game items dict
+        self.parent.remove_widget(self)
         
 class Ammo_item(Widget):
     def __init__(self, item_id,**kwargs):
         super().__init__(**kwargs)
         self.item_id = item_id
+    
+    def add_to_player(self, player):
+        player.bullet_left += 1
+        self.del_item()
+
+    def del_item(self):
+        del self.parent.all_items[self.item_id] # del self in game items dict
+        self.parent.remove_widget(self)
 
 # Main App
 class MyGameApp(App):

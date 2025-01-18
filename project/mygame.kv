@@ -131,7 +131,11 @@
     Label: # enemy left
         text: str(root.enemy_counts)
         font_size: 40
-        pos_hint: {'center_x': 0.95, 'center_y': 0.06}
+        pos_hint: {'center_x': 0.953, 'center_y': 0.06}
+    Label: # heal item left
+        text: str(player.heal_item_left)
+        font_size: 40
+        pos_hint: {'center_x': 0.855, 'center_y': 0.06}
 
     Image: #Health_UI (top left)
         source: 'assets/health.png'
