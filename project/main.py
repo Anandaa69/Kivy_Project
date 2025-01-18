@@ -26,7 +26,10 @@ class GameScreen(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.random_between = (20, 70)
+        self.bullet_damage = 5
+        
         self.enemies = dict() # Store all enemy objects
+        
         Clock.schedule_interval(self.update, 1/60)
 
     def create_enemy(self, pos=(500, 500), speed=0 ,enemy_id=None):
@@ -85,6 +88,13 @@ class GameScreen(Screen):
     def re_enable_enemy(self, enemy_id):
         self.enemies[enemy_id].enable_enemy()
 
+    def minus_enemy_hp(self, enemy_id):
+        if self.enemies[enemy_id].hp_left != 0:
+            self.enemies[enemy_id].hp_left -= self.bullet_damage
+            print(f'subtrack enemy {enemy_id} | HP left = {self.enemies[enemy_id].hp_left}')
+            if self.enemies[enemy_id].hp_left >= 0:
+                self.enemies[enemy_id].disable_enemy()
+
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -121,11 +131,10 @@ class Bullet(Widget):
         self.y += dy
         self.pos = (self.x, self.y)
     
-        #Check Collide
+        #Check Collide with Enemy??
         for key, enemy in self.parent.enemies.items():
             if self.collide_with_enemy(enemy.pos, (enemy.base_width, enemy.base_height)) == True:
-                print(f'enemy {enemy.enemy_id} = {enemy.pos}')
-                print(f'DIEEEEEE {enemy.enemy_id}')
+                self.parent.minus_enemy_hp(enemy.enemy_id) # cal fn() 
                 self.remove_bullet()
         
         #Check Collind with wall
@@ -145,10 +154,8 @@ class Bullet(Widget):
         r2h = enemy_size[1]
 
         if (r1x < r2x + r2w and r1x + r1w > r2x and r1y < r2y + r2h and r1y + r1h > r2y):
-            # self.get_player = True
             return True
         else:
-            # self.get_player = False
             return False
 
 
@@ -160,7 +167,7 @@ class Bullet(Widget):
 
 class Enemy(Widget):
     rotation = NumericProperty(0)
-    hp_enemy_left = NumericProperty(5)
+    hp_left = NumericProperty(5)
     
     def __init__(self, speed,enemy_id=None, **kwargs):
         super().__init__(**kwargs)
@@ -169,6 +176,8 @@ class Enemy(Widget):
         self.enemy_id = enemy_id
         self.enable = False
         self.get_player = False
+
+        Clock.schedule_interval(self.debug_values, 1/60) #Check Frame by Frame
 
     def enable_enemy(self):
         self.enable = True
@@ -219,7 +228,12 @@ class Enemy(Widget):
             return
         self.parent.minus_player_hp(self.enemy_id)  # call fn() in GameScreen
 
+    def debug_values(self, dt):
+        #Check Enemy hp
+        if self.hp_left < 0:
+            self.hp_left = 0
 
+    
 class Player(Widget):
     rotation = NumericProperty(0)
     bullet_left = NumericProperty(20)
