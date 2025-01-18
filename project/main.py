@@ -16,6 +16,8 @@ from kivy.core.window import Window
 from kivy.clock import Clock
 from kivy.properties import NumericProperty
 from kivy.graphics import Ellipse, Line
+from kivy.uix.image import Image
+
 import math
 from random import randint
 
@@ -23,6 +25,7 @@ class MainMenu(Screen):
     pass
 
 class GameScreen(Screen):
+    enemy_counts = NumericProperty(0)
     def __init__(self, **kw):
         super().__init__(**kw)
         self.random_between = (20, 70)
@@ -31,6 +34,9 @@ class GameScreen(Screen):
         self.enemies = dict() # Store all enemy objects
         
         Clock.schedule_interval(self.update, 1/60)
+
+    def on_wave(self, dt):
+        pass
 
     def create_enemy(self, pos=(500, 500), speed=0 ,enemy_id=None):
         print(f'Create Enemy at {pos} and speed {speed}')
@@ -55,6 +61,9 @@ class GameScreen(Screen):
         #Create multiplae enemies here
         positions = [(500, 500), (600, 400), (700, 300), (400, 600)]
         speed = [randint(self.random_between[0], self.random_between[1]) for i in range(len(positions))]
+        
+        self.enemy_counts = len(positions)
+        
         self.create_multiple_enemies(positions, speed)
         for key ,enemy in self.enemies.items():
             enemy.enable_enemy()
@@ -186,6 +195,13 @@ class Enemy(Widget):
     def disable_enemy(self):
         self.enable = False
         print(f'Disable enemy! {self.enemy_id}')
+        
+        #Check On enemy died
+        if self.hp_left == 0:
+            # image = Image(source='assets/enemy_died.png', pos=self.pos)
+            # self.parent.add_widget(image)
+            self.parent.enemy_counts -= 1
+            self.pos = (-50, -50)
     
     def follow_player(self, player_pos, player_size, dt):
         # cal angle between player and enemy
@@ -232,7 +248,6 @@ class Enemy(Widget):
         #Check Enemy hp
         if self.hp_left < 0:
             self.hp_left = 0
-
     
 class Player(Widget):
     rotation = NumericProperty(0)

@@ -105,6 +105,11 @@
         text: str(player.bullet_left)
         font_size: 40
         pos_hint: {'center_x': 0.742, 'center_y': 0.06}
+    Label:
+        text: str(root.enemy_counts)
+        font_size: 40
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
     Image: #Health_UI (top left)
         source: 'assets/health.png'
         size_hint: None, None
@@ -114,6 +119,7 @@
         text: str(player.hp_left)
         font_size: 40
         pos_hint: {'center_x': 0.097, 'center_y': 0.934}
+    
     Button:
         text: 'Back'
         size_hint: 0.05, 0.05
