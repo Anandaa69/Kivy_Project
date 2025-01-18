@@ -366,10 +366,14 @@ class Player(Widget):
         if gun == "shotgun":
             self.gun_type = gun
             self.parent.bullet_damage = 5
+            #make parent ui move
+            self.parent.ids.select_line.pos_hint = {'center_x': 62.5/1280, 'center_y': 0.065}
         elif gun == "pistol":
             self.gun_type = gun
             self.parent.bullet_damage = 0.5
-        
+
+            self.parent.ids.select_line.pos_hint = {'center_x': (62.5+94)/1280, 'center_y': 0.065}
+            
 # Main App
 class MyGameApp(App):
     def build(self):
