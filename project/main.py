@@ -32,6 +32,7 @@ class GameScreen(Screen):
         self.bullet_damage = 5
         
         self.enemies = dict() # Store all enemy objects
+        self.all_items = dict()
         
         Clock.schedule_interval(self.update, 1/60)
 
@@ -79,7 +80,12 @@ class GameScreen(Screen):
         self.ids.player.bullet_left = 20
         self.ids.player.rotation = 0
         self.ids.player.score = 0
-        # -- Enemy ---
+        # --- Enemys ---
+        
+        # --- Items ---
+        for key, item in self.all_items.items():
+            self.remove_widget(item)
+        self.all_items.clear()    
         
         # Reset enemies and remove them from the screen
         for key, enemy in self.enemies.items():
@@ -201,8 +207,8 @@ class Enemy(Widget):
         if self.hp_left == 0:
             self.parent.ids.player.score += 100 #add score
             self.parent.enemy_counts -= 1 #subtractenemy left
-            if random() < 1: #random 25%
-                self.spawn_item(self.pos)
+            if random() < 0.5: #random 50%
+                self.spawn_item(self.pos, self.enemy_id)
             self.pos = (-50, -50)
     
     def follow_player(self, player_pos, player_size, dt):
@@ -251,15 +257,21 @@ class Enemy(Widget):
         if self.hp_left < 0:
             self.hp_left = 0
 
-    def spawn_item(self, pos):
-        item = choice(['h', 'a'])
-        print(f'do = {item}')
-        if item == 'h':
-            widget = Heal_item(pos=pos)
-            self.parent.add_widget(widget)           
-        elif item == 'a':
-            widget = Ammo_item(pos=pos)
-            self.parent.add_widget(widget)
+    def spawn_item(self, pos, item_id):
+        if item_id in self.parent.all_items:
+            print(f"Item ID {item_id} already exists. Skipping spawn.")
+            return  # ป้องกันการสร้าง item ที่มี id ซ้ำ
+        
+        item_type = choice(['h', 'a'])
+        if item_type == 'h':
+            widget = Heal_item(pos=pos, item_id=item_id)
+        elif item_type == 'a':
+            widget = Ammo_item(pos=pos, item_id=item_id)
+
+        self.parent.all_items[item_id] = widget  # เก็บ widget ลงใน dictionary
+        self.parent.add_widget(widget)  # เพิ่ม widget ลงในหน้าจอ
+        print(f"Spawned {item_type} item with ID {item_id} at {pos}")
+
 
 class Player(Widget):
     rotation = NumericProperty(0)
@@ -341,10 +353,8 @@ class Player(Widget):
         #Check
         if "1" in self.keysPressed:
             self.gun_select("shotgun")
-            print('Swap to Shotgun')
         if "2" in self.keysPressed:
             self.gun_select("pistol")
-            print('Swap to Pistol')
 
         #Check Collide?
         new_pos = (currentx, currenty)
@@ -385,12 +395,14 @@ class Player(Widget):
             self.parent.ids.select_line.pos_hint = {'center_x': (62.5+94)/1280, 'center_y': 0.065}
 
 class Heal_item(Widget):
-    def __init__(self, **kwargs):
+    def __init__(self, item_id,**kwargs):
         super().__init__(**kwargs)
-
+        self.item_id = item_id
+        
 class Ammo_item(Widget):
-    def __init__(self, **kwargs):
+    def __init__(self, item_id,**kwargs):
         super().__init__(**kwargs)
+        self.item_id = item_id
 
 # Main App
 class MyGameApp(App):
