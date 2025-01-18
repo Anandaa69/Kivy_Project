@@ -19,7 +19,7 @@ from kivy.graphics import Ellipse, Line
 from kivy.uix.image import Image
 
 import math
-from random import randint
+from random import randint, choice, random
 
 class MainMenu(Screen):
     pass
@@ -101,7 +101,7 @@ class GameScreen(Screen):
     def minus_enemy_hp(self, enemy_id):
         if self.enemies[enemy_id].hp_left != 0:
             self.enemies[enemy_id].hp_left -= self.bullet_damage
-            print(f'subtrack enemy {enemy_id} | HP left = {self.enemies[enemy_id].hp_left}')
+            print(f'subtract enemy {enemy_id} | HP left = {self.enemies[enemy_id].hp_left}')
             if self.enemies[enemy_id].hp_left == 0:
                 self.enemies[enemy_id].disable_enemy()
 
@@ -199,10 +199,10 @@ class Enemy(Widget):
         
         #Check On enemy died
         if self.hp_left == 0:
-            # image = Image(source='assets/enemy_died.png', pos=self.pos)
-            # self.parent.add_widget(image)
             self.parent.ids.player.score += 100 #add score
-            self.parent.enemy_counts -= 1
+            self.parent.enemy_counts -= 1 #subtractenemy left
+            if random() < 1: #random 25%
+                self.spawn_item(self.pos)
             self.pos = (-50, -50)
     
     def follow_player(self, player_pos, player_size, dt):
@@ -250,7 +250,17 @@ class Enemy(Widget):
         #Check Enemy hp
         if self.hp_left < 0:
             self.hp_left = 0
-    
+
+    def spawn_item(self, pos):
+        item = choice(['h', 'a'])
+        print(f'do = {item}')
+        if item == 'h':
+            widget = Heal_item(pos=pos)
+            self.parent.add_widget(widget)           
+        elif item == 'a':
+            widget = Ammo_item(pos=pos)
+            self.parent.add_widget(widget)
+
 class Player(Widget):
     rotation = NumericProperty(0)
     bullet_left = NumericProperty(20)
@@ -373,7 +383,15 @@ class Player(Widget):
             self.parent.bullet_damage = 0.5
 
             self.parent.ids.select_line.pos_hint = {'center_x': (62.5+94)/1280, 'center_y': 0.065}
-            
+
+class Heal_item(Widget):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+class Ammo_item(Widget):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
 # Main App
 class MyGameApp(App):
     def build(self):
