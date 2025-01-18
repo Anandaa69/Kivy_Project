@@ -126,11 +126,18 @@
         pos_hint: {'center_x': 0.097, 'center_y': 0.934}
     
     Image: #Gun select_UI (bottom left)
+        id: gun_select_ui
         source: 'assets/gun_select_ui.png'
         size_hint: None, None
         size: self.texture_size
         pos_hint: {'center_x': 110/1280, 'center_y': (720-670)/720}
-    
+    Image:
+        id: select_line
+        source: 'assets/select_line.png'
+        size_hint: None, None
+        size: self.texture_size
+        pos_hint: {'center_x': 62.5/1280, 'center_y': 0.065}
+
     Button:
         text: 'Back'
         size_hint: 0.05, 0.05
