@@ -200,6 +200,7 @@ class Enemy(Widget):
         if self.hp_left == 0:
             # image = Image(source='assets/enemy_died.png', pos=self.pos)
             # self.parent.add_widget(image)
+            self.parent.ids.player.score += 100 #add score
             self.parent.enemy_counts -= 1
             self.pos = (-50, -50)
     
@@ -253,6 +254,7 @@ class Player(Widget):
     rotation = NumericProperty(0)
     bullet_left = NumericProperty(20)
     hp_left = NumericProperty(1000)
+    score = NumericProperty(0)
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)     

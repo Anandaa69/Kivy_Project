@@ -96,6 +96,11 @@
         id: player
 
     # --- UI ---
+    Label: # bullet left
+        text: str(player.score)
+        font_size: 60
+        pos_hint: {'center_x': 1084/1280, 'center_y': (720-42)/720}
+
     Image: #UI (under right)
         source: 'assets/under_ui.png'
         size_hint: None, None
