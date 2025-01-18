@@ -296,9 +296,6 @@ class Player(Widget):
         if text == " ":  # press SpcaeBar to shoot
             if self.bullet_left > 0:
                 self.shoot_bullet()
-                print(self.bullet_left)
-            else:
-                print('Out of Bullet!') 
                 
     def _on_key_up(self, keyboard, keycode):
         text = keycode[1]
@@ -308,7 +305,9 @@ class Player(Widget):
     def shoot_bullet(self):
         bullet = Bullet(self.pos[0]+self.base_width/2, self.pos[1]+self.base_height/2, self.rotation)
         self.parent.add_widget(bullet)  # add bullet to screen
-        self.bullet_left -= 1
+        #Check gun type
+        if self.gun_type == "shotgun":
+            self.bullet_left -= 1
 
     def move_step(self, dt):
         currentx, currenty = self.pos
