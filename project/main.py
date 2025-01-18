@@ -108,7 +108,7 @@ class GameScreen(Screen):
         if self.enemies[enemy_id].hp_left != 0:
             self.enemies[enemy_id].hp_left -= self.bullet_damage
             print(f'subtract enemy {enemy_id} | HP left = {self.enemies[enemy_id].hp_left}')
-            if self.enemies[enemy_id].hp_left == 0:
+            if self.enemies[enemy_id].hp_left <= 0:
                 self.enemies[enemy_id].disable_enemy()
 
 class SettingScreen(Screen):
@@ -195,6 +195,11 @@ class Enemy(Widget):
 
         Clock.schedule_interval(self.debug_values, 1/60) #Check Frame by Frame
 
+    def debug_values(self, dt):
+        #Check Enemy hp
+        if self.hp_left < 0:
+            self.hp_left = 0
+
     def enable_enemy(self):
         self.enable = True
         print(f'Enable enemy! {self.enemy_id}')
@@ -204,7 +209,7 @@ class Enemy(Widget):
         print(f'Disable enemy! {self.enemy_id}')
         
         #Check On enemy died
-        if self.hp_left == 0:
+        if self.hp_left <= 0:
             self.parent.ids.player.score += 100 #add score
             self.parent.enemy_counts -= 1 #subtractenemy left
             if random() < 0.5: #random 50%
@@ -251,11 +256,6 @@ class Enemy(Widget):
         if self.get_player == False:  # debug 
             return
         self.parent.minus_player_hp(self.enemy_id)  # call fn() in GameScreen
-
-    def debug_values(self, dt):
-        #Check Enemy hp
-        if self.hp_left < 0:
-            self.hp_left = 0
 
     def spawn_item(self, pos, item_id):
         if item_id in self.parent.all_items:
