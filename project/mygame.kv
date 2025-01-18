@@ -101,14 +101,14 @@
         size_hint: None, None
         size: self.texture_size
         pos_hint: {'right': 0.94, 'y': 0.015} 
-    Label:
+    Label: # bullet left
         text: str(player.bullet_left)
         font_size: 40
         pos_hint: {'center_x': 0.742, 'center_y': 0.06}
-    Label:
+    Label: # enemy left
         text: str(root.enemy_counts)
         font_size: 40
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        pos_hint: {'center_x': 0.845, 'center_y': 0.06}
 
     Image: #Health_UI (top left)
         source: 'assets/health.png'
