@@ -104,9 +104,9 @@ class GameScreen(Screen):
     def re_enable_enemy(self, enemy_id):
         self.enemies[enemy_id].enable_enemy()
 
-    def minus_enemy_hp(self, enemy_id):
+    def minus_enemy_hp(self, enemy_id, damage):
         if self.enemies[enemy_id].hp_left != 0:
-            self.enemies[enemy_id].hp_left -= self.bullet_damage
+            self.enemies[enemy_id].hp_left -= damage
             print(f'subtract enemy {enemy_id} | HP left = {self.enemies[enemy_id].hp_left}')
             if self.enemies[enemy_id].hp_left <= 0:
                 self.enemies[enemy_id].disable_enemy()
@@ -126,11 +126,12 @@ class SettingScreen(Screen):
             Window.fullscreen = True
 
 class Bullet(Widget):
-    def __init__(self, x, y, rotation, **kwargs):
+    def __init__(self, x, y, rotation, damage, **kwargs):
         super().__init__(**kwargs)
         self.pos = (x, y)
         self.rotation = rotation
         self.velocity = 500  # Speed
+        self.damage = damage
 
         # Update frame by frame
         Clock.schedule_interval(self.move_bullet, 1/60)
@@ -150,7 +151,7 @@ class Bullet(Widget):
         #Check Collide with Enemy??
         for key, enemy in self.parent.enemies.items():
             if self.collide_with_enemy(enemy.pos, (enemy.base_width, enemy.base_height)) == True:
-                self.parent.minus_enemy_hp(enemy.enemy_id) # cal fn() 
+                self.parent.minus_enemy_hp(enemy.enemy_id, self.damage) # cal fn() 
                 self.remove_bullet()
         
         #Check Collind with wall
@@ -325,7 +326,7 @@ class Player(Widget):
             self.keysPressed.remove(text)
 
     def shoot_bullet(self):
-        bullet = Bullet(self.pos[0]+self.base_width/2, self.pos[1]+self.base_height/2, self.rotation)
+        bullet = Bullet(self.pos[0]+self.base_width/2, self.pos[1]+self.base_height/2, self.rotation, self.parent.bullet_damage)
         self.parent.add_widget(bullet)  # add bullet to screen
         #Check gun type
         if self.gun_type == "shotgun":
