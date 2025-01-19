@@ -242,11 +242,10 @@ class Enemy(Widget):
                 return True
         return False
 
-
+    #Chat GPT GG!
     def find_clear_path(self, angle):
         step_angle = 15  # ความละเอียดในการหมุนแต่ละครั้ง (องศา)
         max_steps = 360 // step_angle  # จำนวนรอบหมุนทั้งหมด
-
         for step in range(1, max_steps + 1):
             # หมุนไปทั้งสองทิศทาง (ซ้าย และ ขวา)
             for direction in [-1, 1]:
@@ -259,10 +258,8 @@ class Enemy(Widget):
 
                 # ตรวจสอบว่าตำแหน่งใหม่ไม่ชนกับอุปสรรค
                 if not any(self.collide_with(new_pos, obs.pos, obs.size) for obs in self.parent.all_obstacles):
-                    print(f"Found clear path at angle: {math.degrees(new_angle)}")
                     return new_angle
 
-        print("No clear path found, keeping original angle.")
         return angle  # ถ้าหามุมที่ปลอดภัยไม่ได้ ให้คืนมุมเดิม
 
     def follow_player(self, player_pos, player_size, dt):
@@ -290,7 +287,6 @@ class Enemy(Widget):
         else:
             self.get_player = True
             self.attack_player()
-            
             
     def collide_with(self, o1_pos, o2_pos, o2_size):
         r1x = o1_pos[0]
@@ -420,8 +416,9 @@ class Player(Widget):
 
         #Check Collide?
         new_pos = (currentx, currenty)
-        if self.collide_with_wall(new_pos) == False:
-            self.pos = new_pos #Update
+        for obstacle in self.parent.all_obstacles:
+            if self.collide_with(new_pos, obstacle.pos, obstacle.size) == False and self.collide_with_wall(new_pos) == False:
+                self.pos = new_pos
 
     def collide_with_wall(self, new_pos):
         x, y = new_pos
@@ -431,6 +428,21 @@ class Player(Widget):
             return True
         
         return False
+
+    def collide_with(self, o1_pos, o2_pos, o2_size):
+        r1x = o1_pos[0]
+        r1y = o1_pos[1]
+        r2x = o2_pos[0]
+        r2y = o2_pos[1]
+        r1w = self.base_width
+        r1h = self.base_height
+        r2w = o2_size[0]
+        r2h = o2_size[1]
+
+        if (r1x < r2x + r2w and r1x + r1w > r2x and r1y < r2y + r2h and r1y + r1h > r2y):
+            return True
+        else:
+            return False
 
     def debug_values(self, dt):
         #Check Player hp
