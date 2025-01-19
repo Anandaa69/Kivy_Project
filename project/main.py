@@ -54,7 +54,7 @@ class GameScreen(Screen):
     
     def create_obstacle(self, positions, sizes):
         for i, pos in enumerate(positions):
-            obstacle = Obstacle(pos_hint={'center_x':pos[0]/1280, 'center_y':pos[1]/720}, b_width=sizes[i][0], b_height=sizes[i][1], source='assets/obstacle.png')
+            obstacle = Obstacle(pos=pos, size_hint=(None, None), source='assets/obstacle.png')
             self.add_widget(obstacle)
             self.all_obstacles.append(obstacle)
             print('obstacle object is =',self.all_obstacles)
@@ -68,13 +68,13 @@ class GameScreen(Screen):
         self.ids.player.enable_keyboard()
         
         #Create Obstacles here
-        obstacle_positions = [(639, 348)]
+        obstacle_positions = [(300, 348)]
         obstacle_size = [(521, 85)]
         
         self.create_obstacle(obstacle_positions, obstacle_size)
         
         #Create multiplae enemies here
-        enemy_positions = [(500, 500), (600, 400), (1100, 300), (400, 600)]
+        enemy_positions = [(500, 500), (900, 600), (1100, 300), (400, 600)]
         speed = [randint(self.random_between[0], self.random_between[1]) for i in range(len(enemy_positions))]
         
         self.enemy_counts = len(enemy_positions)
@@ -141,11 +141,9 @@ class SettingScreen(Screen):
             Window.fullscreen = True
 
 class Obstacle(Image):
-    def __init__(self, b_width=50, b_height=50, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.base_width = b_width
-        self.base_height =  b_height
-        self.size = (self.base_width, self.base_height)
+        self.size = (self.texture_size)
 
 class Bullet(Widget):
     def __init__(self, x, y, rotation, damage, **kwargs):
@@ -240,9 +238,32 @@ class Enemy(Widget):
    
     def collide_with_obstacle(self):
         for obstacle in self.parent.all_obstacles:
-            if self.collide_widget(obstacle):
+            if self.collide_with(self.pos, obstacle.pos, obstacle.size):
                 return True
         return False
+
+
+    def find_clear_path(self, angle):
+        step_angle = 15  # ความละเอียดในการหมุนแต่ละครั้ง (องศา)
+        max_steps = 360 // step_angle  # จำนวนรอบหมุนทั้งหมด
+
+        for step in range(1, max_steps + 1):
+            # หมุนไปทั้งสองทิศทาง (ซ้าย และ ขวา)
+            for direction in [-1, 1]:
+                new_angle = angle + math.radians(direction * step * step_angle)
+
+                # คำนวณตำแหน่งใหม่ตามมุมที่ปรับเปลี่ยน
+                move_x = self.speed * math.cos(new_angle)
+                move_y = self.speed * math.sin(new_angle)
+                new_pos = (self.pos[0] + move_x, self.pos[1] + move_y)
+
+                # ตรวจสอบว่าตำแหน่งใหม่ไม่ชนกับอุปสรรค
+                if not any(self.collide_with(new_pos, obs.pos, obs.size) for obs in self.parent.all_obstacles):
+                    print(f"Found clear path at angle: {math.degrees(new_angle)}")
+                    return new_angle
+
+        print("No clear path found, keeping original angle.")
+        return angle  # ถ้าหามุมที่ปลอดภัยไม่ได้ ให้คืนมุมเดิม
 
     def follow_player(self, player_pos, player_size, dt):
         #Cal angle between player and enemy
@@ -253,9 +274,9 @@ class Enemy(Widget):
 
         #Check when collide with obstacle
         if self.collide_with_obstacle() == True:
-            print(f'Enemy {self.enemy_id} Collide!!')
-            # angle = self.find_clear_path(angle, self.parent.all_obstacles)
-        
+            angle = self.find_clear_path(angle)
+            self.rotation = math.degrees(angle)
+            
         step_size = self.speed * dt
         move_x = step_size * math.cos(angle)  # move X
         move_y = step_size * math.sin(angle)  # move Y
@@ -263,7 +284,7 @@ class Enemy(Widget):
         # Update position enemy
         new_pos = (self.pos[0] + move_x, self.pos[1] + move_y)
         #Check
-        if self.collide_with_player(new_pos, player_pos, player_size) == False:
+        if self.collide_with(new_pos, player_pos, player_size) == False:
             self.get_player = False
             self.pos = new_pos #Update
         else:
@@ -271,7 +292,7 @@ class Enemy(Widget):
             self.attack_player()
             
             
-    def collide_with_player(self, o1_pos, o2_pos, o2_size):
+    def collide_with(self, o1_pos, o2_pos, o2_size):
         r1x = o1_pos[0]
         r1y = o1_pos[1]
         r2x = o2_pos[0]
