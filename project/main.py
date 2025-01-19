@@ -32,6 +32,7 @@ class GameScreen(Screen):
         self.bullet_damage = 5
         self.enemy_damage = 20
         
+        self.all_obstacles = list() # Store all obstacles object
         self.enemies = dict() # Store all enemy objects
         self.all_items = dict()
         
@@ -50,23 +51,34 @@ class GameScreen(Screen):
     def create_multiple_enemies(self, positions, speed):
         for i, pos in enumerate(positions):
             self.create_enemy(pos=pos, speed=speed[i], enemy_id=f"Enemy_{i+1}")
-       
+    
+    def create_obstacle(self, positions, sizes):
+        for i, pos in enumerate(positions):
+            obstacle = Obstacle(pos_hint={'center_x':pos[0]/1280, 'center_y':pos[1]/720}, b_width=sizes[i][0], b_height=sizes[i][1], source='assets/obstacle.png')
+            self.add_widget(obstacle)
+            self.all_obstacles.append(obstacle)
+            print('obstacle object is =',self.all_obstacles)
+            
     def update(self, dt):
         for key, enemy in self.enemies.items():
             if enemy.enable == True:
                 enemy.follow_player(self.ids.player.pos, (self.ids.player.base_width, self.ids.player.base_height), dt)
-
-                    
+ 
     def on_enter(self):
         self.ids.player.enable_keyboard()
         
+        #Create Obstacles here
+        obstacle_positions = [(639, 348)]
+        obstacle_size = [(521, 85)]
+        
+        self.create_obstacle(obstacle_positions, obstacle_size)
+        
         #Create multiplae enemies here
-        positions = [(500, 500), (600, 400), (700, 300), (400, 600)]
-        speed = [randint(self.random_between[0], self.random_between[1]) for i in range(len(positions))]
+        enemy_positions = [(500, 500), (600, 400), (1100, 300), (400, 600)]
+        speed = [randint(self.random_between[0], self.random_between[1]) for i in range(len(enemy_positions))]
         
-        self.enemy_counts = len(positions)
-        
-        self.create_multiple_enemies(positions, speed)
+        self.enemy_counts = len(enemy_positions)
+        self.create_multiple_enemies(enemy_positions, speed)
         for key ,enemy in self.enemies.items():
             enemy.enable_enemy()
         
@@ -128,6 +140,13 @@ class SettingScreen(Screen):
             print('Change to FullScreen')
             Window.fullscreen = True
 
+class Obstacle(Image):
+    def __init__(self, b_width=50, b_height=50, **kwargs):
+        super().__init__(**kwargs)
+        self.base_width = b_width
+        self.base_height =  b_height
+        self.size = (self.base_width, self.base_height)
+
 class Bullet(Widget):
     def __init__(self, x, y, rotation, damage, **kwargs):
         super().__init__(**kwargs)
@@ -178,7 +197,6 @@ class Bullet(Widget):
         else:
             return False
 
-
     def remove_bullet(self):
         if self.parent:
             self.parent.remove_widget(self)
@@ -219,14 +237,25 @@ class Enemy(Widget):
             if random() < 0.5: #random 50%
                 self.spawn_item(self.pos, self.enemy_id)
             self.pos = (-50, -50)
-    
+   
+    def collide_with_obstacle(self):
+        for obstacle in self.parent.all_obstacles:
+            if self.collide_widget(obstacle):
+                return True
+        return False
+
     def follow_player(self, player_pos, player_size, dt):
-        # cal angle between player and enemy
+        #Cal angle between player and enemy
         dx = player_pos[0] - self.pos[0]
         dy = player_pos[1] - self.pos[1]
         angle = math.atan2(dy, dx)  # cal rotation of enemy
         self.rotation = math.degrees(angle)
 
+        #Check when collide with obstacle
+        if self.collide_with_obstacle() == True:
+            print(f'Enemy {self.enemy_id} Collide!!')
+            # angle = self.find_clear_path(angle, self.parent.all_obstacles)
+        
         step_size = self.speed * dt
         move_x = step_size * math.cos(angle)  # move X
         move_y = step_size * math.sin(angle)  # move Y
@@ -235,25 +264,26 @@ class Enemy(Widget):
         new_pos = (self.pos[0] + move_x, self.pos[1] + move_y)
         #Check
         if self.collide_with_player(new_pos, player_pos, player_size) == False:
+            self.get_player = False
             self.pos = new_pos #Update
         else:
+            self.get_player = True
             self.attack_player()
             
-    def collide_with_player(self, new_pos, player_pos, player_size):
-        r1x = new_pos[0]
-        r1y = new_pos[1]
-        r2x = player_pos[0]
-        r2y = player_pos[1]
+            
+    def collide_with_player(self, o1_pos, o2_pos, o2_size):
+        r1x = o1_pos[0]
+        r1y = o1_pos[1]
+        r2x = o2_pos[0]
+        r2y = o2_pos[1]
         r1w = self.base_width
         r1h = self.base_height
-        r2w = player_size[0]
-        r2h = player_size[1]
+        r2w = o2_size[0]
+        r2h = o2_size[1]
 
         if (r1x < r2x + r2w and r1x + r1w > r2x and r1y < r2y + r2h and r1y + r1h > r2y):
-            self.get_player = True
             return True
         else:
-            self.get_player = False
             return False
         
     def attack_player(self):
