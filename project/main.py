@@ -15,9 +15,8 @@ from kivy.uix.widget import Widget
 from kivy.core.window import Window
 from kivy.clock import Clock
 from kivy.properties import NumericProperty
-from kivy.graphics import Ellipse, Line
+from kivy.graphics import Ellipse, Line, Rotate, PushMatrix, PopMatrix
 from kivy.uix.image import Image
-
 import math
 from random import randint, choice, random
 
@@ -52,7 +51,7 @@ class GameScreen(Screen):
         for i, pos in enumerate(positions):
             self.create_enemy(pos=pos, speed=speed[i], enemy_id=f"Enemy_{i+1}")
     
-    def create_obstacle(self, positions, sizes):
+    def create_obstacle(self, positions):
         for i, pos in enumerate(positions):
             obstacle = Obstacle(pos=pos, size_hint=(None, None), source='assets/obstacle.png')
             self.add_widget(obstacle)
@@ -68,10 +67,9 @@ class GameScreen(Screen):
         self.ids.player.enable_keyboard()
         
         #Create Obstacles here
-        obstacle_positions = [(300, 348)]
-        obstacle_size = [(521, 85)]
+        obstacle_positions = [(310, 131), (310, 392)] 
         
-        self.create_obstacle(obstacle_positions, obstacle_size)
+        self.create_obstacle(obstacle_positions)
         
         #Create multiplae enemies here
         enemy_positions = [(500, 500), (900, 600), (1100, 300), (400, 600)]
@@ -416,9 +414,11 @@ class Player(Widget):
 
         #Check Collide?
         new_pos = (currentx, currenty)
-        for obstacle in self.parent.all_obstacles:
-            if self.collide_with(new_pos, obstacle.pos, obstacle.size) == False and self.collide_with_wall(new_pos) == False:
-                self.pos = new_pos
+        for x in self.parent.all_obstacles:
+            # print(x.pos, x.size)
+            if not any(self.collide_with(new_pos, x.pos, x.size) for x in self.parent.all_obstacles):
+                 if self.collide_with_wall(new_pos) == False:
+                    self.pos = new_pos
 
     def collide_with_wall(self, new_pos):
         x, y = new_pos
