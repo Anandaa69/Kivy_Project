@@ -51,9 +51,9 @@ class GameScreen(Screen):
         for i, pos in enumerate(positions):
             self.create_enemy(pos=pos, speed=speed[i], enemy_id=f"Enemy_{i+1}")
     
-    def create_obstacle(self, positions):
+    def create_obstacle(self, positions, images):
         for i, pos in enumerate(positions):
-            obstacle = Obstacle(pos=pos, size_hint=(None, None), source='assets/obstacle.png')
+            obstacle = Obstacle(pos=pos, size_hint=(None, None), source=images[i])
             self.add_widget(obstacle)
             self.all_obstacles.append(obstacle)
             print('obstacle object is =',self.all_obstacles)
@@ -67,9 +67,10 @@ class GameScreen(Screen):
         self.ids.player.enable_keyboard()
         
         #Create Obstacles here
-        obstacle_positions = [(310, 131), (310, 392), (570, 131), (570, 392), (830, 131), (830, 392)] 
+        obstacle_positions = [(310, 131), (310, 392), (570, 131), (570, 392), (830, 131), (830, 392), (42, 150)] 
+        obstacle_images = ['assets/obstacle.png' for _ in range(6)] + ['assets/obstacle_2.png',]
         
-        self.create_obstacle(obstacle_positions)
+        self.create_obstacle(obstacle_positions, obstacle_images)
         
         #Create multiplae enemies here
         enemy_positions = [(500, 500), (900, 600), (1100, 300), (400, 600)]
@@ -123,6 +124,8 @@ class GameScreen(Screen):
             print(f'subtract enemy {enemy_id} | HP left = {self.enemies[enemy_id].hp_left}')
             if self.enemies[enemy_id].hp_left <= 0:
                 self.enemies[enemy_id].disable_enemy()
+                self.remove_widget(self.enemies[enemy_id]) #remove enemy
+                del self.enemies[enemy_id]
 
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
@@ -167,7 +170,7 @@ class Bullet(Widget):
         self.pos = (self.x, self.y)
     
         #Check Collide with Enemy??
-        for key, enemy in self.parent.enemies.items():
+        for key, enemy in list(self.parent.enemies.items()):
             if self.collide_with_enemy(enemy.pos, (enemy.base_width, enemy.base_height)) == True:
                 self.parent.minus_enemy_hp(enemy.enemy_id, self.damage) # cal fn() 
                 self.remove_bullet()
