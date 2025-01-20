@@ -54,9 +54,8 @@ class GameScreen(Screen):
     def create_obstacle(self, positions, images):
         for i, pos in enumerate(positions):
             obstacle = Obstacle(pos=pos, size_hint=(None, None), source=images[i])
-            self.add_widget(obstacle)
+            self.add_widget(obstacle, index=-1)
             self.all_obstacles.append(obstacle)
-            print('obstacle object is =',self.all_obstacles)
             
     def update(self, dt):
         for key, enemy in self.enemies.items():
@@ -67,8 +66,8 @@ class GameScreen(Screen):
         self.ids.player.enable_keyboard()
         
         #Create Obstacles here
-        obstacle_positions = [(310, 131), (310, 392), (570, 131), (570, 392), (830, 131), (830, 392), (42, 150)] 
-        obstacle_images = ['assets/obstacle.png' for _ in range(6)] + ['assets/obstacle_2.png',]
+        obstacle_positions = [(310, 131), (310, 392), (570, 131), (830, 131), (830, 392), (42, 150), (1050, 540), (570, 400)] 
+        obstacle_images = ['assets/obstacle.png' for _ in range(5)] + ['assets/obstacle_2.png', 'assets/obstacle_4.png', 'assets/obstacle_3.png']
         
         self.create_obstacle(obstacle_positions, obstacle_images)
         
@@ -124,8 +123,8 @@ class GameScreen(Screen):
             print(f'subtract enemy {enemy_id} | HP left = {self.enemies[enemy_id].hp_left}')
             if self.enemies[enemy_id].hp_left <= 0:
                 self.enemies[enemy_id].disable_enemy()
-                self.remove_widget(self.enemies[enemy_id]) #remove enemy
-                del self.enemies[enemy_id]
+                self.remove_widget(self.enemies[enemy_id]) #remove this enemy from game !
+                del self.enemies[enemy_id] # remove this enemy from dict!
 
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
