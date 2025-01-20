@@ -67,7 +67,7 @@ class GameScreen(Screen):
         self.ids.player.enable_keyboard()
         
         #Create Obstacles here
-        obstacle_positions = [(310, 131), (310, 392)] 
+        obstacle_positions = [(310, 131), (310, 392), (570, 131), (570, 392), (830, 131), (830, 392)] 
         
         self.create_obstacle(obstacle_positions)
         
@@ -414,10 +414,8 @@ class Player(Widget):
 
         #Check Collide?
         new_pos = (currentx, currenty)
-        for x in self.parent.all_obstacles:
-            # print(x.pos, x.size)
-            if not any(self.collide_with(new_pos, x.pos, x.size) for x in self.parent.all_obstacles):
-                 if self.collide_with_wall(new_pos) == False:
+        if not any(self.collide_with(new_pos, x.pos, x.size) for x in self.parent.all_obstacles):
+                if self.collide_with_wall(new_pos) == False:
                     self.pos = new_pos
 
     def collide_with_wall(self, new_pos):
