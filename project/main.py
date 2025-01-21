@@ -259,7 +259,11 @@ class Enemy(Widget):
         self.enemy_id = enemy_id
         self.enable = False
         self.get_player = False
-
+        
+        self.last_safe_angle = None  # เพิ่มตัวแปรจดจำมุมปลอดภัยล่าสุด
+        self.stuck_counter = 0  # ตัวแปรตรวจจับการติดขัด
+        self.stuck_limit = 10  # จำนวนครั้งที่อนุญาตให้ติดขัดก่อนหยุดชั่วคราว
+        
         Clock.schedule_interval(self.debug_values, 1/60) #Check Frame by Frame
 
     def debug_values(self, dt):
@@ -293,50 +297,61 @@ class Enemy(Widget):
 
     #Chat GPT GG!
     def find_clear_path(self, angle):
-        step_angle = 15  # ความละเอียดในการหมุนแต่ละครั้ง (องศา)
-        max_steps = 360 // step_angle  # จำนวนรอบหมุนทั้งหมด
+        step_angle = 15
+        max_steps = 360 // step_angle
+        found_angle = None
+
         for step in range(1, max_steps + 1):
-            # หมุนไปทั้งสองทิศทาง (ซ้าย และ ขวา)
             for direction in [-1, 1]:
                 new_angle = angle + math.radians(direction * step * step_angle)
-
-                # คำนวณตำแหน่งใหม่ตามมุมที่ปรับเปลี่ยน
                 move_x = self.speed * math.cos(new_angle)
                 move_y = self.speed * math.sin(new_angle)
                 new_pos = (self.pos[0] + move_x, self.pos[1] + move_y)
 
-                # ตรวจสอบว่าตำแหน่งใหม่ไม่ชนกับอุปสรรค
+                # ตรวจสอบตำแหน่งใหม่
                 if not any(self.collide_with(new_pos, obs.pos, obs.size) for obs in self.parent.all_obstacles):
-                    return new_angle
+                    found_angle = new_angle
+                    break
+            if found_angle:
+                break
 
-        return angle  # ถ้าหามุมที่ปลอดภัยไม่ได้ ให้คืนมุมเดิม
+        if found_angle is not None:
+            self.last_safe_angle = found_angle  # บันทึกมุมปลอดภัยล่าสุด
+            return found_angle
+        elif self.last_safe_angle is not None:
+            return self.last_safe_angle  # ใช้มุมปลอดภัยล่าสุด
+        else:
+            return angle  # ถ้าไม่มีมุมไหนปลอดภัย ใช้มุมเดิม
 
     def follow_player(self, player_pos, player_size, dt):
-        #Cal angle between player and enemy
         dx = player_pos[0] - self.pos[0]
         dy = player_pos[1] - self.pos[1]
-        angle = math.atan2(dy, dx)  # cal rotation of enemy
-        self.rotation = math.degrees(angle)
+        distance_to_player = math.sqrt(dx**2 + dy**2)
+        angle = math.atan2(dy, dx)
 
-        #Check when collide with obstacle
-        if self.collide_with_obstacle() == True:
-            angle = self.find_clear_path(angle)
-            self.rotation = math.degrees(angle)
-            
+        # ตรวจสอบการชนสิ่งกีดขวาง
+        if self.collide_with_obstacle():
+            if distance_to_player < 50:  # ถ้าผู้เล่นอยู่ใกล้มาก
+                self.rotation = math.degrees(angle)  # หมุนไปหา Player แต่ไม่ขยับ
+                return
+            else:
+                angle = self.find_clear_path(angle)  # หาเส้นทางใหม่
+                self.rotation = math.degrees(angle)
+
+        # คำนวณการเคลื่อนที่
         step_size = self.speed * dt
-        move_x = step_size * math.cos(angle)  # move X
-        move_y = step_size * math.sin(angle)  # move Y
-
-        # Update position enemy
+        move_x = step_size * math.cos(angle)
+        move_y = step_size * math.sin(angle)
         new_pos = (self.pos[0] + move_x, self.pos[1] + move_y)
-        #Check
-        if self.collide_with(new_pos, player_pos, player_size) == False and self.collide_with_wall(new_pos) == False:
+
+        # ตรวจสอบการชน Player หรือสิ่งกีดขวาง
+        if not self.collide_with(new_pos, player_pos, player_size) and not self.collide_with_wall(new_pos):
             self.get_player = False
-            self.pos = new_pos #Update
+            self.pos = new_pos
         else:
             self.get_player = True
             self.attack_player()
-            
+        
     def collide_with(self, o1_pos, o2_pos, o2_size):
         r1x = o1_pos[0]
         r1y = o1_pos[1]
@@ -351,7 +366,7 @@ class Enemy(Widget):
             return True
         else:
             return False
-        
+            
     def collide_with_wall(self, new_pos):
         x, y = new_pos
         if x < 42 or x + self.base_width > Window.width - 42:
