@@ -25,13 +25,19 @@ class MainMenu(Screen):
 
 class GameScreen(Screen):
     enemy_counts = NumericProperty(0)
+    wave_game = NumericProperty(0)
+    
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.random_between = (20, 70)
         self.bullet_damage = 5
-        self.enemy_damage = 20
         
-        self.wave_game = 0
+        self.enemy_damage = 10
+        self.random_between = (20, 70)
+        self.enemies_now = 10
+        self.enemies_max = 100
+        self.speed_max = 100
+        
+        self.delay_time = 0
         self.all_obstacles = list() # Store all obstacles object
         self.enemies = dict() # Store all enemy objects
         self.all_items = dict()
@@ -41,16 +47,27 @@ class GameScreen(Screen):
     def on_wave(self, dt):
         pass
 
-    def create_enemy(self, pos=(500, 500), speed=0 ,enemy_id=None):
-        print(f'Create Enemy at {pos} and speed {speed}')
-        enemy = Enemy(pos=pos, speed=speed,enemy_id=enemy_id)
-        self.add_widget(enemy)
-        self.enemies[enemy_id] = enemy # add dynamic enemy to list 
+    def create_enemy(self, dt):
+        random_spawn = [self.ids.spawn_1, self.ids.spawn_2, self.ids.spawn_3, self.ids.spawn_4]
+        for i in range(self.enemies_now):
+            pos = choice(random_spawn).pos
+            pos[0] += choice(range(50))
+            enemy = Enemy(pos=pos, speed=randint(self.random_between[0], self.random_between[1]), enemy_id=str(i+1))
+            self.add_widget(enemy)
+            self.enemies[str(i+1)] = enemy # add dynamic enemy to list 
+            enemy.enable_enemy() # Enemy on!
+            self.enemy_counts += 1
+
+    # def create_enemy(self, pos=(500, 500), speed=0 ,enemy_id=None):
+    #     print(f'Create Enemy at {pos} and speed {speed}')
+    #     enemy = Enemy(pos=pos, speed=speed,enemy_id=enemy_id)
+    #     self.add_widget(enemy)
+    #     self.enemies[enemy_id] = enemy # add dynamic enemy to list 
         
     #Give ID to enemy
     def create_multiple_enemies(self, positions, speed):
         for i, pos in enumerate(positions):
-            self.create_enemy(pos=pos, speed=speed[i], enemy_id=f"Enemy_{i+1}")
+            self.create_enemy(pos=pos, speed=speed[i], enemy_id=i+1)
     
     def create_obstacle(self, positions, images):
         for i, pos in enumerate(positions):
@@ -74,13 +91,13 @@ class GameScreen(Screen):
         self.create_obstacle(obstacle_positions, obstacle_images)
         
         #Create multiplae enemies here
-        enemy_positions = [(500, 500), (900, 600), (1100, 300), (400, 600)]
-        speed = [randint(self.random_between[0], self.random_between[1]) for i in range(len(enemy_positions))]
+        # enemy_positions = [(500, 500), (900, 600), (1100, 300), (400, 600)]
+        # speed = [randint(self.random_between[0], self.random_between[1]) for i in range(len(enemy_positions))]
         
-        self.enemy_counts = len(enemy_positions)
-        self.create_multiple_enemies(enemy_positions, speed)
-        for key ,enemy in self.enemies.items():
-            enemy.enable_enemy()
+        # self.enemy_counts = len(enemy_positions)
+        # self.create_multiple_enemies(enemy_positions, speed)
+        # for key ,enemy in self.enemies.items():
+        #     enemy.enable_enemy()
         
     def on_leave(self):
         self.ids.player.disable_keyboard()
@@ -131,7 +148,7 @@ class GameScreen(Screen):
 
     def end_wave(self):
         if self.enemy_counts == 0:
-            if self.ids.player.collide_with(self.ids.player.pos, self.ids.nw_ob.pos, self.ids.nw_ob.size):
+            if self.delay_time == 0 and self.ids.player.collide_with(self.ids.player.pos, self.ids.nw_ob.pos, self.ids.nw_ob.size):
                 self.ids.bt_nw.disabled = False
                 self.ids.bt_nw.opacity = 1
             else:
@@ -139,7 +156,10 @@ class GameScreen(Screen):
                 self.ids.bt_nw.opacity = 0
     
     def next_wave(self):
-        print('Noob')
+        self.delay_time = 1
+        self.ids.bt_nw.disabled = True
+        self.wave_game += 1
+        Clock.schedule_once(self.create_enemy, 3)
         
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
@@ -183,11 +203,13 @@ class Bullet(Widget):
         self.y += dy
         self.pos = (self.x, self.y)
     
-        #Check Collide with Enemy??
+        #Check Collide with Enemy?
         for key, enemy in list(self.parent.enemies.items()):
             if self.collide_with_enemy(enemy.pos, (enemy.base_width, enemy.base_height)) == True:
-                self.parent.minus_enemy_hp(enemy.enemy_id, self.damage) # cal fn() 
+                self.parent.minus_enemy_hp(enemy.enemy_id, self.damage) # cal fn()
                 self.remove_bullet()
+                break
+
         
         #Check Collind with wall
         if self.x < 42 or self.x > Window.width-42 or self.y < 42 or self.y > Window.height-42: # 42 mean pixel of width and height of wall in background
