@@ -329,14 +329,17 @@ class Enemy(Widget):
         distance_to_player = math.sqrt(dx**2 + dy**2)
         angle = math.atan2(dy, dx)
 
-        # ตรวจสอบการชนสิ่งกีดขวาง
         if self.collide_with_obstacle():
+            # เมื่อชน Obstacle ให้หามุมใหม่โดยใช้ find_clear_path
             if distance_to_player < 50:  # ถ้าผู้เล่นอยู่ใกล้มาก
-                self.rotation = math.degrees(angle)  # หมุนไปหา Player แต่ไม่ขยับ
+                self.rotation = math.degrees(angle)  # หันหน้าไปหาผู้เล่น แต่ไม่ขยับ
                 return
             else:
                 angle = self.find_clear_path(angle)  # หาเส้นทางใหม่
                 self.rotation = math.degrees(angle)
+        else:
+            # เมื่อไม่ชน Obstacle ให้หันไปหาผู้เล่นโดยตรง
+            self.rotation = math.degrees(angle)
 
         # คำนวณการเคลื่อนที่
         step_size = self.speed * dt
@@ -344,13 +347,14 @@ class Enemy(Widget):
         move_y = step_size * math.sin(angle)
         new_pos = (self.pos[0] + move_x, self.pos[1] + move_y)
 
-        # ตรวจสอบการชน Player หรือสิ่งกีดขวาง
+        # ตรวจสอบการชน Player หรือกำแพง
         if not self.collide_with(new_pos, player_pos, player_size) and not self.collide_with_wall(new_pos):
             self.get_player = False
             self.pos = new_pos
         else:
             self.get_player = True
             self.attack_player()
+
         
     def collide_with(self, o1_pos, o2_pos, o2_size):
         r1x = o1_pos[0]
