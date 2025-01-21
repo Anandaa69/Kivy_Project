@@ -31,6 +31,7 @@ class GameScreen(Screen):
         self.bullet_damage = 5
         self.enemy_damage = 20
         
+        self.wave_game = 0
         self.all_obstacles = list() # Store all obstacles object
         self.enemies = dict() # Store all enemy objects
         self.all_items = dict()
@@ -61,7 +62,8 @@ class GameScreen(Screen):
         for key, enemy in self.enemies.items():
             if enemy.enable == True:
                 enemy.follow_player(self.ids.player.pos, (self.ids.player.base_width, self.ids.player.base_height), dt)
- 
+        self.end_wave()
+        
     def on_enter(self):
         self.ids.player.enable_keyboard()
         
@@ -111,11 +113,11 @@ class GameScreen(Screen):
 
         #Make Delay Enemy
         self.enemies[enemy_id].disable_enemy()
-        
         Clock.schedule_once(lambda dt: self.re_enable_enemy(enemy_id), 4)
 
     def re_enable_enemy(self, enemy_id):
-        self.enemies[enemy_id].enable_enemy()
+        if enemy_id in self.enemies:
+            self.enemies[enemy_id].enable_enemy()
 
     def minus_enemy_hp(self, enemy_id, damage):
         if self.enemies[enemy_id].hp_left != 0:
@@ -126,6 +128,18 @@ class GameScreen(Screen):
                 self.remove_widget(self.enemies[enemy_id]) #remove this enemy from game !
                 del self.enemies[enemy_id] # remove this enemy from dict!
 
+    def end_wave(self):
+        if self.enemy_counts == 0:
+            if self.ids.player.collide_with(self.ids.player.pos, self.ids.nw_ob.pos, self.ids.nw_ob.size):
+                self.ids.bt_nw.disabled = False
+                self.ids.bt_nw.opacity = 1
+            else:
+                self.ids.bt_nw.disabled = True
+                self.ids.bt_nw.opacity = 0
+    
+    def next_wave(self):
+        print('Noob')
+        
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
