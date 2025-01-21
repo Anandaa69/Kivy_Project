@@ -156,10 +156,20 @@ class GameScreen(Screen):
                 self.ids.bt_nw.opacity = 0
     
     def next_wave(self):
-        self.delay_time = 1
+        self.delay_time = 1 # check!!!!!!
         self.ids.bt_nw.disabled = True
         self.wave_game += 1
         Clock.schedule_once(self.create_enemy, 3)
+        #give harder to game
+        if self.enemies_now <= self.enemies_max:
+            self.enemies_now += 5 #add 5 enemy to next wave
+        self.enemy_damage += 5 #add 5 enemy damage
+        self.random_between = [x + 10 for x in self.random_between]
+        self.delay_time = 0 # !!!!!
+        print(f'REPORT NEXT WAVE is {self.wave_game}')
+        print(f'speed = {self.random_between}')
+        print(f'enemy damage = {self.enemy_damage}')
+        print(f'enemy count = {self.enemies_now}')
         
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
