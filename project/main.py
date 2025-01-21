@@ -95,6 +95,7 @@ class GameScreen(Screen):
         self.ids.player.score = 0
         self.ids.player.hp_left = self.ids.player.hp_max
         self.ids.player.heal_item_left = 0
+        self.ids.player.coin = 0
         # --- Enemys ---
         
         # --- Items ---
@@ -297,7 +298,7 @@ class Enemy(Widget):
         # Update position enemy
         new_pos = (self.pos[0] + move_x, self.pos[1] + move_y)
         #Check
-        if self.collide_with(new_pos, player_pos, player_size) == False:
+        if self.collide_with(new_pos, player_pos, player_size) == False and self.collide_with_wall(new_pos) == False:
             self.get_player = False
             self.pos = new_pos #Update
         else:
@@ -319,6 +320,15 @@ class Enemy(Widget):
         else:
             return False
         
+    def collide_with_wall(self, new_pos):
+        x, y = new_pos
+        if x < 42 or x + self.base_width > Window.width - 42:
+            return True
+        if y < 42 or y + self.base_height > Window.height - 42:
+            return True
+        
+        return False
+         
     def attack_player(self):
         if self.get_player == False:  # debug 
             return
