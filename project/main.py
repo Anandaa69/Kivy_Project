@@ -330,6 +330,7 @@ class Player(Widget):
     hp_left = NumericProperty(200)
     score = NumericProperty(0)
     heal_item_left = NumericProperty(0)
+    coin = NumericProperty(0)
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)     
