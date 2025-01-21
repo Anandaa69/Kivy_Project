@@ -430,7 +430,9 @@ class Player(Widget):
         self.keysPressed.add(text)
 
         if text == " ":  # press SpcaeBar to shoot
-            if self.bullet_left > 0:
+            if self.bullet_left > 0 and self.gun_type == 'shotgun':
+                self.shoot_bullet()
+            if self.gun_type == 'pistol':
                 self.shoot_bullet()
                 
     def _on_key_up(self, keyboard, keycode):
