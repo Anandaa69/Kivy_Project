@@ -232,6 +232,8 @@ class Enemy(Widget):
         if self.hp_left <= 0:
             self.parent.ids.player.score += 100 #add score
             self.parent.enemy_counts -= 1 #subtractenemy left
+            self.parent.ids.player.coin += 10
+            
             if random() < 0.5: #random 50%
                 self.spawn_item(self.pos, self.enemy_id)
             self.pos = (-50, -50)
