@@ -49,9 +49,6 @@ class GameScreen(Screen):
         
         Clock.schedule_interval(self.update, 1/60)
 
-    def on_wave(self, dt):
-        pass
-
     def create_enemy(self, dt):
         random_spawn = [self.ids.spawn_1, self.ids.spawn_2, self.ids.spawn_3, self.ids.spawn_4, self.ids.spawn_5]
         for i in range(self.enemies_now):
@@ -140,15 +137,29 @@ class GameScreen(Screen):
                 del self.enemies[enemy_id] # remove this enemy from dict!
 
     def end_wave(self):
+        #On end wave show store
+        if self.enemy_counts == 0:
+            self.ids.store.opacity = 1
+        else:
+            self.ids.store.opacity = 0
+        
         check = self.ids.player.collide_with(self.ids.player.pos, self.ids.nw_ob.pos, self.ids.nw_ob.size)
-        # print(check)
-        if self.enemy_counts and check == True or check == False:
+        if self.enemy_counts != 0 and check == True or check == False:
             self.ids.bt_nw.disabled = True
             self.ids.bt_nw.opacity = 0
+            
         elif check == True and self.enemy_counts == 0:
             self.ids.bt_nw.disabled = False
             self.ids.bt_nw.opacity = 1
-    
+            
+        check_2 = self.ids.player.collide_with(self.ids.player.pos, self.ids.store.pos, self.ids.store.size)
+        if self.enemy_counts != 0 and check_2 == True or check_2 == False:
+            self.ids.bt_store.disabled = True
+            self.ids.bt_store.opacity = 0
+        elif check_2 == True and self.enemy_counts == 0:
+            self.ids.bt_store.disabled = False
+            self.ids.bt_store.opacity = 1  
+            
     def next_wave(self):
         # self.delay_time = 1 # check!!!!!!
         # self.ids.bt_nw.disabled = True
@@ -159,8 +170,6 @@ class GameScreen(Screen):
         wave_label = WaveLabel(f'WAVE {self.wave_game}')
         self.add_widget(wave_label)  # เพิ่ม WaveLabel เข้าไปใน GameScreen
         wave_label.show_message(duration=0.5)
-
-        self.show_upgrade_popup()
 
     def show_upgrade_popup(self):
         # สร้างและเปิด Popup

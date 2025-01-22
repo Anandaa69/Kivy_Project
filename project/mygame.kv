@@ -139,6 +139,14 @@
         size: self.texture_size
         pos_hint: {'center_x': 510/1280, 'center_y': (720-250)/720}
         index: 0
+    Button:
+        id: bt_store
+        text: 'Store'
+        size_hint: 0.05, 0.05
+        pos_hint: {'center_x': 510/1280, 'center_y': 550/720}
+        on_press: root.show_upgrade_popup()
+        disabled: 'True'
+
 
     #Next wave
     Image:
@@ -164,30 +172,35 @@
         size_hint: None, None
         size: self.texture_size
         pos_hint: {'center_x': 80/1280, 'center_y': (720-140)/720}
+        opacity: 0
     Image:
         id: spawn_2
         source: 'assets/spawn_2.png'
         size_hint: None, None
         size: self.texture_size
         pos_hint: {'center_x': 470/1280, 'center_y': (720-80)/720}
+        opacity: 0
     Image:
         id: spawn_3
         source: 'assets/spawn_2.png'
         size_hint: None, None
         size: self.texture_size
         pos_hint: {'center_x': 940/1280, 'center_y': (720-640)/720}
+        opacity: 0
     Image:
         id: spawn_4
         source: 'assets/spawn_2.png'
         size_hint: None, None
         size: self.texture_size
         pos_hint: {'center_x': 200/1280, 'center_y': (720-640)/720}
+        opacity: 0
     Image:
         id: spawn_5
         source: 'assets/spawn_2.png'
         size_hint: None, None
         size: self.texture_size
         pos_hint: {'center_x': 990/1280, 'center_y': (720-90)/720}
+        opacity: 0
 
     Player:
         id: player
@@ -249,3 +262,4 @@
         size_hint: 0.05, 0.05
         pos_hint: {'center_x': 0.5, 'center_y': 0.9}
         on_press: app.root.current = 'main_menu'
+        opacity: 0
