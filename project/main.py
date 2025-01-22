@@ -16,7 +16,9 @@ from kivy.core.window import Window
 from kivy.clock import Clock
 from kivy.properties import NumericProperty
 from kivy.graphics import Ellipse, Line, Rotate, PushMatrix, PopMatrix
+from kivy.animation import Animation
 from kivy.uix.image import Image
+from kivy.uix.label import Label
 import math
 from random import randint, choice, random
 
@@ -145,12 +147,17 @@ class GameScreen(Screen):
         elif check == True and self.enemy_counts == 0:
             self.ids.bt_nw.disabled = False
             self.ids.bt_nw.opacity = 1
+    
     def next_wave(self):
         # self.delay_time = 1 # check!!!!!!
         # self.ids.bt_nw.disabled = True
         self.wave_game += 1
         self.enemy_counts = self.enemies_now
         Clock.schedule_once(self.create_enemy, 3)
+        
+        wave_label = WaveLabel(f'WAVE {self.wave_game}')
+        self.add_widget(wave_label)  # เพิ่ม WaveLabel เข้าไปใน GameScreen
+        wave_label.show_message(duration=0.5)
     
     def next_game_value(self):
         #give harder to game
@@ -162,7 +169,49 @@ class GameScreen(Screen):
         print(f'speed = {self.random_between}')
         print(f'enemy damage = {self.enemy_damage}')
         print(f'enemy count = {self.enemies_now}')      
-    
+
+class WaveLabel(Widget):
+    def __init__(self, wave, **kwargs):
+        super().__init__(**kwargs)
+        self.wave = wave
+
+        # สร้าง Label พร้อมกำหนดตำแหน่ง
+        self.label = Label(
+            text=wave,
+            font_size="30sp",
+            opacity=0,  # เริ่มด้วยข้อความโปร่งใส
+            size_hint=(None, None),  # ขนาดไม่ขยาย
+            size=(400, 100),  # ขนาดของข้อความ
+            halign="center",  # จัดข้อความให้อยู่กึ่งกลางแนวนอน
+            valign="middle",  # จัดข้อความให้อยู่กึ่งกลางแนวตั้ง
+        )
+        self.label.bind(size=self.label.setter('text_size'))  # จัดข้อความให้อยู่ตรงกลางของ Label
+        self.add_widget(self.label)
+
+    def on_parent(self, instance, parent):
+        if parent:
+            # ตั้งค่าให้ Label อยู่ตรงกลางค่อนบนของ parent
+            self.label.center_x = parent.center_x  # ตรงกลางตามแนวนอน
+            self.label.center_y = parent.top * 0.75  # ตำแหน่งค่อนบน (ปรับ 0.75 ตามต้องการ)
+
+    def show_message(self, duration=2):
+        # Animation: เพิ่ม opacity เป็น 1
+        fade_in = Animation(opacity=1, duration=duration / 0.5)
+        # Animation: ลด opacity กลับไปเป็น 0
+        fade_out = Animation(opacity=0, duration=duration / 0.5)
+
+        # รวม Animation (fade_in -> fade_out)
+        fade_in += fade_out
+        fade_in.bind(on_complete=self.remove_widget_from_parent)  # ลบตัวเองเมื่อ Animation เสร็จ
+        fade_in.start(self.label)
+
+    def remove_widget_from_parent(self, *args):
+        """ลบตัวเองออกจาก parent"""
+        if self.parent:
+            self.parent.remove_widget(self)
+
+        
+  
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
