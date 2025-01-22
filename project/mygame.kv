@@ -87,7 +87,21 @@
             text: "UPGRADE!"
             size_hint: (155/1280, 58/720)
             pos_hint: {'center_x': 1050/1280,'center_y': (720-410)/720}
-            on_press: root.upgrade_speed()   
+            on_press: root.upgrade_speed()
+
+        Button:
+            id: b_bullet
+            text: "BUY!"
+            size_hint: (155/1280, 58/720)
+            pos_hint: {'center_x': 850/1280,'center_y': (720-625)/720}
+            on_press: root.buy_bullet()
+
+        Button:
+            id: b_heal
+            text: "BUY!"
+            size_hint: (155/1280, 58/720)
+            pos_hint: {'center_x': 1200/1280,'center_y': (720-625)/720}
+            on_press: root.buy_heal()
 
         Button:
             text: "Close"

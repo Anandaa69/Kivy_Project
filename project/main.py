@@ -37,8 +37,8 @@ class GameScreen(Screen):
         self.enemy_damage = 10
         self.random_between = (20, 70)
         self.enemies_now = 10
-        self.enemies_max = 100
-        self.speed_max = 100
+        self.enemies_max = 150
+        
         #add by next wave
         self.enemy_nw_add = 3
         
@@ -96,6 +96,10 @@ class GameScreen(Screen):
         self.ids.player.hp_left = self.ids.player.hp_max
         self.ids.player.heal_item_left = 0
         self.ids.player.coin = 0
+        self.ids.player.speed = 100
+        self.ids.player.hp_left = 100
+        self.ids.player.hp_max = 100
+        
         # --- Enemys ---
         self.enemy_counts = 0
         # --- Items ---
@@ -194,7 +198,7 @@ class UpgradePopup(Popup):
         self.game_screen = game_screen  # รับ GameScreen เพื่อให้สามารถเข้าถึงตัวแปรต่างๆ
         self.coin = game_screen.ids.player.coin
         self.price = 20
-        
+        self.price_2 = 10
         if self.game_screen:
             self.game_screen.ids.player.bind(coin=self.update_coin)
     
@@ -202,7 +206,7 @@ class UpgradePopup(Popup):
         self.coin = value  # Update the coin in UpgradePopup when it changes
     
     def upgrade_speed(self):
-        if self.game_screen.ids.player.coin > 0 and self.game_screen.ids.player.coin - self.price > 0:
+        if self.game_screen.ids.player.coin > 0 and self.game_screen.ids.player.coin - self.price >= 0:
             self.game_screen.ids.player.speed += 10
             print(self.game_screen.ids.player.speed)
             
@@ -212,7 +216,7 @@ class UpgradePopup(Popup):
             print('Cant buy')
 
     def upgrade_hp(self):
-        if self.game_screen.ids.player.coin > 0 and self.game_screen.ids.player.coin - self.price > 0:
+        if self.game_screen.ids.player.coin > 0 and self.game_screen.ids.player.coin - self.price >= 0:
             self.game_screen.ids.player.hp_left += 5
             self.game_screen.ids.player.hp_max += 5
             
@@ -221,6 +225,16 @@ class UpgradePopup(Popup):
         else:
             print('Cant buy')
 
+    def buy_bullet(self):
+        if self.game_screen.ids.player.coin > 0 and self.game_screen.ids.player.coin - self.price_2 >= 0:
+            self.game_screen.ids.player.bullet_left += 1
+            self.game_screen.ids.player.coin -= self.price_2
+
+    def buy_heal(self):
+        if self.game_screen.ids.player.coin > 0 and self.game_screen.ids.player.coin - self.price_2 >= 0:
+            self.game_screen.ids.player.heal_item_left += 1
+            self.game_screen.ids.player.coin -= self.price_2
+            
 class WaveLabel(Widget):
     def __init__(self, wave, **kwargs):
         super().__init__(**kwargs)
@@ -256,8 +270,6 @@ class WaveLabel(Widget):
         if self.parent:
             self.parent.remove_widget(self)
 
-        
-  
 class SettingScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
