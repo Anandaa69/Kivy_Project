@@ -26,6 +26,8 @@ from random import randint, choice, random
 class MainMenu(Screen):
     pass
 
+class EndGame(Screen):
+    pass
 class GameScreen(Screen):
     enemy_counts = NumericProperty(0)
     wave_game = NumericProperty(0)
@@ -190,6 +192,9 @@ class GameScreen(Screen):
         # print(f'speed = {self.random_between}')
         # print(f'enemy damage = {self.enemy_damage}')
         # print(f'enemy count = {self.enemies_now}')      
+
+    def end_game(self):
+        self.manager.current = 'end_game'
 
 class UpgradePopup(Popup):
     coin = NumericProperty(0)
@@ -640,8 +645,10 @@ class Player(Widget):
             self.heal_item_left < 99
         if self.heal_item_left < 0:
             self.heal_item_left = 0
-    
-    
+        #Check END GAME
+        if self.hp_left == 0:
+            self.parent.end_game()
+
     def gun_select(self, gun):
         if gun == "shotgun":
             self.gun_type = gun
@@ -707,6 +714,7 @@ class MyGameApp(App):
         sm.add_widget(MainMenu(name='main_menu'))
         sm.add_widget(GameScreen(name='game'))
         sm.add_widget(SettingScreen(name='setting_menu'))
+        sm.add_widget(EndGame(name='end_game'))
         return sm
 
 if __name__ == '__main__':
