@@ -60,24 +60,45 @@
 
 <UpgradePopup>:
     title: "STORE"
-    size_hint: (0.6, 0.4)
+    size_hint: (0.7, 0.7)
     auto_dismiss: False
 
     FloatLayout:
-        
-        # Button:
-        #     text: "Increase Bullet Damage"
-        #     on_press: root.upgrade_bullet_damage()
-        
-        # Button:
-        #     text: "Increase Enemy Speed"
-        #     on_press: root.upgrade_enemy_speed()
+        Image:
+            source: 'assets/bg_store.png'
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        Image:
+            source: 'assets/store_img.png'
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {'center_x': 0.2,'center_y': 0.5}
         
         Button:
+            id: up_hp
+            text: "UPGRADE!"
+            size_hint: (155/1280, 58/720)
+            pos_hint: {'center_x': 1050/1280,'center_y': (720-230)/720}
+            on_press: root.upgrade_hp()
+
+        Button:
+            id: up_speed
+            text: "UPGRADE!"
+            size_hint: (155/1280, 58/720)
+            pos_hint: {'center_x': 1050/1280,'center_y': (720-410)/720}
+            on_press: root.upgrade_speed()   
+
+        Button:
             text: "Close"
-            size_hint: (0.5, 0.2)
+            size_hint: (0.3, 0.15)
             pos_hint: {"center_x": 0.5}
             on_press: root.dismiss()
+
+        Label: # Coin left in Store
+            text: str(root.coin)
+            font_size: 40
+            pos_hint: {'center_x': 1100/1280, 'center_y': (720-40)/720}
 
 #On MainMenu Screen
 <MainMenu>:
@@ -262,4 +283,4 @@
         size_hint: 0.05, 0.05
         pos_hint: {'center_x': 0.5, 'center_y': 0.9}
         on_press: app.root.current = 'main_menu'
-        opacity: 0
+        opacity: 1

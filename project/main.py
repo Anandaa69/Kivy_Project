@@ -182,26 +182,44 @@ class GameScreen(Screen):
             self.enemies_now += self.enemy_nw_add #add 5 enemy to next wave
         self.enemy_damage += 5 #add 5 enemy damage
         self.random_between = [x + 10 for x in self.random_between] 
-        print(f'REPORT NEXT WAVE is {self.wave_game}')
-        print(f'speed = {self.random_between}')
-        print(f'enemy damage = {self.enemy_damage}')
-        print(f'enemy count = {self.enemies_now}')      
+        # print(f'REPORT NEXT WAVE is {self.wave_game}')
+        # print(f'speed = {self.random_between}')
+        # print(f'enemy damage = {self.enemy_damage}')
+        # print(f'enemy count = {self.enemies_now}')      
 
 class UpgradePopup(Popup):
+    coin = NumericProperty(0)
     def __init__(self, game_screen, **kwargs):
         super().__init__(**kwargs)
         self.game_screen = game_screen  # รับ GameScreen เพื่อให้สามารถเข้าถึงตัวแปรต่างๆ
-        self.title = "Choose Upgrade"
+        self.coin = game_screen.ids.player.coin
+        self.price = 20
+        
+        if self.game_screen:
+            self.game_screen.ids.player.bind(coin=self.update_coin)
+    
+    def update_coin(self, instance, value):
+        self.coin = value  # Update the coin in UpgradePopup when it changes
+    
+    def upgrade_speed(self):
+        if self.game_screen.ids.player.coin > 0 and self.game_screen.ids.player.coin - self.price > 0:
+            self.game_screen.ids.player.speed += 10
+            print(self.game_screen.ids.player.speed)
+            
+            self.game_screen.ids.player.coin -= self.price
+            print('UPGRADE SPEED!!!')
+        else:
+            print('Cant buy')
 
-    def upgrade_bullet_damage(self):
-        # เพิ่มความแรงของกระสุน
-        self.game_screen.bullet_damage += 5
-        print(f"Bullet Damage upgraded! Current: {self.game_screen.bullet_damage}")
-
-    def upgrade_enemy_speed(self):
-        # เพิ่มความเร็วของศัตรู
-        self.game_screen.random_between = (x + 5 for x in self.game_screen.random_between)
-        print(f"Enemy speed upgraded! Current speed range: {self.game_screen.random_between}")
+    def upgrade_hp(self):
+        if self.game_screen.ids.player.coin > 0 and self.game_screen.ids.player.coin - self.price > 0:
+            self.game_screen.ids.player.hp_left += 5
+            self.game_screen.ids.player.hp_max += 5
+            
+            self.game_screen.ids.player.coin -= self.price
+            print('UPGRADE HP!!!')
+        else:
+            print('Cant buy')
 
 class WaveLabel(Widget):
     def __init__(self, wave, **kwargs):
@@ -235,7 +253,6 @@ class WaveLabel(Widget):
         fade_in.start(self.label)
 
     def remove_widget_from_parent(self, *args):
-        """ลบตัวเองออกจาก parent"""
         if self.parent:
             self.parent.remove_widget(self)
 
@@ -486,6 +503,7 @@ class Player(Widget):
         self.pos = (50, 50)
         self.hp_max = 100
         self.heal_size = 20 # effect of heal item
+        self.speed = 300
         
         self.keysPressed = set()
         self._keyboard = None
@@ -540,8 +558,8 @@ class Player(Widget):
         currentx, currenty = self.pos
         
         #Setup
-        step_size = 300 * dt
-        step_rotate = 150 * dt
+        step_size = self.speed * dt
+        step_rotate = 125 * dt
         
         if "w" in self.keysPressed:
             currenty += step_size
@@ -639,7 +657,7 @@ class Player(Widget):
                 item.add_to_player(self)
 
     def use_heal_item(self):
-        if self.heal_item_left > 0 and self.hp_left < self.hp_max and self.hp_left + self.heal_size <= self.hp_max:
+        if self.heal_item_left > 0 and self.hp_left < self.hp_max:
             print('Use Heal Item!')
             self.heal_item_left -= 1
             self.hp_left += 20
