@@ -19,6 +19,7 @@ from kivy.graphics import Ellipse, Line, Rotate, PushMatrix, PopMatrix
 from kivy.animation import Animation
 from kivy.uix.image import Image
 from kivy.uix.label import Label
+from kivy.uix.popup import Popup
 import math
 from random import randint, choice, random
 
@@ -158,6 +159,13 @@ class GameScreen(Screen):
         wave_label = WaveLabel(f'WAVE {self.wave_game}')
         self.add_widget(wave_label)  # เพิ่ม WaveLabel เข้าไปใน GameScreen
         wave_label.show_message(duration=0.5)
+
+        self.show_upgrade_popup()
+
+    def show_upgrade_popup(self):
+        # สร้างและเปิด Popup
+        popup = UpgradePopup(self)
+        popup.open()
     
     def next_game_value(self):
         #give harder to game
@@ -170,29 +178,41 @@ class GameScreen(Screen):
         print(f'enemy damage = {self.enemy_damage}')
         print(f'enemy count = {self.enemies_now}')      
 
+class UpgradePopup(Popup):
+    def __init__(self, game_screen, **kwargs):
+        super().__init__(**kwargs)
+        self.game_screen = game_screen  # รับ GameScreen เพื่อให้สามารถเข้าถึงตัวแปรต่างๆ
+        self.title = "Choose Upgrade"
+
+    def upgrade_bullet_damage(self):
+        # เพิ่มความแรงของกระสุน
+        self.game_screen.bullet_damage += 5
+        print(f"Bullet Damage upgraded! Current: {self.game_screen.bullet_damage}")
+
+    def upgrade_enemy_speed(self):
+        # เพิ่มความเร็วของศัตรู
+        self.game_screen.random_between = (x + 5 for x in self.game_screen.random_between)
+        print(f"Enemy speed upgraded! Current speed range: {self.game_screen.random_between}")
+
 class WaveLabel(Widget):
     def __init__(self, wave, **kwargs):
         super().__init__(**kwargs)
         self.wave = wave
-
-        # สร้าง Label พร้อมกำหนดตำแหน่ง
         self.label = Label(
             text=wave,
             font_size="30sp",
-            opacity=0,  # เริ่มด้วยข้อความโปร่งใส
-            size_hint=(None, None),  # ขนาดไม่ขยาย
-            size=(400, 100),  # ขนาดของข้อความ
-            halign="center",  # จัดข้อความให้อยู่กึ่งกลางแนวนอน
-            valign="middle",  # จัดข้อความให้อยู่กึ่งกลางแนวตั้ง
+            opacity=0,  
+            size_hint=(None, None),  
+            size=(400, 100),
+            halign="center",
+            valign="middle",
         )
-        self.label.bind(size=self.label.setter('text_size'))  # จัดข้อความให้อยู่ตรงกลางของ Label
         self.add_widget(self.label)
 
     def on_parent(self, instance, parent):
         if parent:
-            # ตั้งค่าให้ Label อยู่ตรงกลางค่อนบนของ parent
-            self.label.center_x = parent.center_x  # ตรงกลางตามแนวนอน
-            self.label.center_y = parent.top * 0.75  # ตำแหน่งค่อนบน (ปรับ 0.75 ตามต้องการ)
+            self.label.center_x = parent.center_x 
+            self.label.center_y = parent.top * 0.75 
 
     def show_message(self, duration=2):
         # Animation: เพิ่ม opacity เป็น 1
