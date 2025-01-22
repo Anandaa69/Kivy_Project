@@ -27,7 +27,15 @@ class MainMenu(Screen):
     pass
 
 class EndGame(Screen):
-    pass
+    total_score = NumericProperty(0)
+    wave = NumericProperty(0)
+
+    def update_score(self, score):
+        self.total_score = score
+
+    def update_wave(self, wave):
+        self.wave = wave
+    
 class GameScreen(Screen):
     enemy_counts = NumericProperty(0)
     wave_game = NumericProperty(0)
@@ -194,7 +202,13 @@ class GameScreen(Screen):
         # print(f'enemy count = {self.enemies_now}')      
 
     def end_game(self):
+        # send score and wave to end screen
+        end_screen = self.manager.get_screen('end_game')
+        end_screen.update_score(self.ids.player.score)
+        end_screen.update_wave(self.wave_game)
+        # change to end screen
         self.manager.current = 'end_game'
+
 
 class UpgradePopup(Popup):
     coin = NumericProperty(0)

@@ -299,9 +299,25 @@
         on_press: app.root.current = 'main_menu'
         opacity: 1
 
-# <EndGame>:
-#     BoxLayout:
-#         Label: # Score
-#             text: str(player.score)
-#             font_size: 60
-#             pos_hint: {'center_x': 1084/1280, 'center_y': (720-42)/720}
+<EndGame>:
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text:'GAME END'
+            font_size: 80
+        Label: # Score
+            text: f'Score = {str(root.total_score)}'
+            font_size: 60
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        Label: # Wave
+            text: f'Wave = {str(root.wave)}'
+            font_size: 60
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        Label:
+            text:'THANK YOU FOR PLAYING!!'
+            font_size: 80
+    Button:
+        text: 'Back'
+        size_hint: 0.05, 0.05
+        pos_hint: {'center_x': 0.5, 'center_y': 0.9}
+        on_press: app.root.current = 'main_menu'
