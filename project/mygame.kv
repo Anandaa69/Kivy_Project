@@ -1,14 +1,14 @@
 #Player setting
 <Player>:
-    base_width: 65
-    base_height: 65
+    base_width: 70
+    base_height: 60
     canvas.before:
         PushMatrix
         Rotate:
             angle: root.rotation
             origin: self.x+self.base_width / 2, self.y+self.base_height / 2
     canvas:    
-        Ellipse:
+        Rectangle:
             source: 'assets/player.png'
             pos: self.pos
             size: self.base_width, self.base_height
@@ -71,11 +71,11 @@
             size_hint: None, None
             size: self.texture_size
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-        Image:
-            source: 'assets/store_img.png'
-            size_hint: None, None
-            size: self.texture_size
-            pos_hint: {'center_x': 0.2,'center_y': 0.5}
+        # Image:
+        #     source: 'assets/store_img.png'
+        #     size_hint: None, None
+        #     size: self.texture_size
+        #     pos_hint: {'center_x': 0.2,'center_y': 0.5}
         
         Button:
             id: up_hp
@@ -197,9 +197,9 @@
         index: 1
     Button:
         id: bt_nw
-        text: 'Next Wave'
-        size_hint: 0.05, 0.05
-        pos_hint: {'center_x': 640/1280, 'center_y': 410/720}
+        text: 'Next Wave!'
+        size_hint: 0.07, 0.05
+        pos_hint: {'center_x': 640/1280, 'center_y': 450/720}
         on_press: root.next_wave()
         disabled: 'True'
         opacity: 0.0
@@ -306,7 +306,7 @@
     Button:
         text: 'Back'
         size_hint: 0.05, 0.05
-        pos_hint: {'center_x': 0.5, 'center_y': 0.9}
+        pos_hint: {'center_x': 0.95, 'center_y': 0.97}
         on_press: app.root.current = 'main_menu'
         opacity: 1
 

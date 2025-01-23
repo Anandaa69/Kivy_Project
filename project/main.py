@@ -260,10 +260,10 @@ class WaveLabel(Widget):
         self.wave = wave
         self.label = Label(
             text=wave,
-            font_size="30sp",
+            font_size="70sp",
             opacity=0,  
             size_hint=(None, None),  
-            size=(400, 100),
+            size=(800, 200),
             halign="center",
             valign="middle",
         )
@@ -272,7 +272,7 @@ class WaveLabel(Widget):
     def on_parent(self, instance, parent):
         if parent:
             self.label.center_x = parent.center_x 
-            self.label.center_y = parent.top * 0.75 
+            self.label.center_y = parent.top * 0.85
 
     def show_message(self, duration=2):
         # Animation: เพิ่ม opacity เป็น 1
