@@ -243,15 +243,11 @@
         id: player
 
     # --- UI ---
-    #Top-right
+    #Top-left
     Label: # Score
         text: str(player.score)
         font_size: 60
         pos_hint: {'center_x': 1084/1280, 'center_y': (720-42)/720}
-    Label: # Coin
-        text: str(player.coin)
-        font_size: 40
-        pos_hint: {'center_x': 0.08, 'center_y': (720-100)/720}
 
     Image: #UI (under right)
         source: 'assets/under_ui.png'
@@ -282,7 +278,16 @@
         text: str(player.hp_left)
         font_size: 40
         pos_hint: {'center_x': 0.1, 'center_y': 0.934}
-    
+    Label: # Coin
+        text: str(player.coin)
+        font_size: 40
+        pos_hint: {'center_x': 0.22, 'center_y': 0.935}
+    Image:
+        source: 'assets/money.png'
+        size_hint: None, None
+        size: self.texture_size
+        pos_hint: {'center_x': 0.17, 'center_y': 0.935}
+
     Image: #Gun select_UI (bottom left)
         id: gun_select_ui
         source: 'assets/gun_select_ui.png'
