@@ -159,12 +159,14 @@
 
 #On Game Screen
 <GameScreen>:
-
-    #BackGround
+    # Image:
+    #     source: 'assets/bg.png'
+    #     allow_stretch: True  # Allow the image to stretch to fill the space
+    #     # keep_ratio: False  # Do not maintain the aspect ratio (stretch to fit)
+    #     size_hint: 1, 1  # Fill the entire screen
+    # #BackGround
     Image:
         source: 'assets/bg.png'
-        # allow_stretch: True  # ทำให้ภาพขยายได้
-        # keep_ratio: False  # ปิดการรักษาสัดส่วนของภาพ
 
     #Store
     Image:
@@ -255,7 +257,9 @@
         source: 'assets/under_ui.png'
         size_hint: None, None
         size: self.texture_size
-        pos_hint: {'right': 0.94, 'y': 0.015} 
+        pos_hint: {'right': 0.94, 'y': 0.015}
+        allow_stretch: True
+        # size_hint: 1, 1
     Label: # bullet left
         text: str(player.bullet_left)
         font_size: 40

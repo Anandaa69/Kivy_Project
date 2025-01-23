@@ -1,12 +1,11 @@
 import kivy
 kivy.require('2.3.1')
-
 from kivy.config import Config
-
 # Screen Config
 Config.set('graphics', 'width', '1280')  # Width of Screen
 Config.set('graphics', 'height', '720')  # Height of Screen
 Config.set('graphics', 'resizable', False)  # Set can't change screen size
+Config.set('graphics', 'maxfps', '60')  # Set FPS to 144 fps
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
@@ -88,7 +87,7 @@ class GameScreen(Screen):
         
         #Create Obstacles here
         obstacle_positions = [(310, 131), (310, 392), (570, 131), (830, 131), (830, 392), (42, 150), (1050, 540), (570, 400)] 
-        obstacle_images = ['assets/obstacle.png' for _ in range(5)] + ['assets/obstacle_2.png', 'assets/obstacle_4.png', 'assets/obstacle_3.png']
+        obstacle_images = ['assets/obstacle.png' for _ in range(5)] + ['assets/obstacle_2.png', 'assets/obstacle_4.png', 'assets/obstacle.png']
         
         self.create_obstacle(obstacle_positions, obstacle_images)
         
@@ -123,6 +122,7 @@ class GameScreen(Screen):
         self.enemies_now = 10
         self.enemies_max = 100
         self.speed_max = 100
+        self.wave_game = 0
         
         # Reset enemies and remove them from the screen
         for key, enemy in self.enemies.items():
