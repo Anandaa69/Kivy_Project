@@ -86,7 +86,7 @@ class GameScreen(Screen):
         self.ids.player.enable_keyboard()
         
         #Create Obstacles here
-        obstacle_positions = [(310, 131), (310, 392), (570, 131), (830, 131), (830, 392), (42, 150), (1050, 540), (570, 400)] 
+        obstacle_positions = [(310, 131), (310, 392), (570, 131), (830, 131), (830, 392), (42, 150), (1050, 520), (570, 400)] 
         obstacle_images = ['assets/obstacle.png' for _ in range(5)] + ['assets/obstacle_2.png', 'assets/obstacle_4.png', 'assets/obstacle.png']
         
         self.create_obstacle(obstacle_positions, obstacle_images)

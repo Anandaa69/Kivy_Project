@@ -41,19 +41,19 @@
             size: self.base_width, self.base_height
 
 <Heal_item>:
-    base_width: 20
-    base_height: 20
+    base_width: 30
+    base_height: 30
     canvas:
-        Ellipse:
+        Rectangle:
             source: 'assets/heal.png'
             pos: self.pos
             size: self.base_width, self.base_height
 
 <Ammo_item>:
-    base_width: 20
-    base_height: 20
+    base_width: 30
+    base_height: 30
     canvas:
-        Ellipse:
+        Rectangle:
             source: 'assets/ammo.png'
             pos: self.pos
             size: self.base_width, self.base_height
@@ -159,14 +159,15 @@
 
 #On Game Screen
 <GameScreen>:
-    # Image:
-    #     source: 'assets/bg.png'
-    #     allow_stretch: True  # Allow the image to stretch to fill the space
-    #     # keep_ratio: False  # Do not maintain the aspect ratio (stretch to fit)
-    #     size_hint: 1, 1  # Fill the entire screen
     # #BackGround
     Image:
         source: 'assets/bg.png'
+        # size_hint: None, None
+        # size: self.texture_size
+        # pos: 0, 0
+
+    # Image:
+    #     source: 'assets/bg.png'
 
     #Store
     Image:
@@ -183,7 +184,6 @@
         pos_hint: {'center_x': 510/1280, 'center_y': 550/720}
         on_press: root.show_upgrade_popup()
         disabled: 'True'
-
 
     #Next wave
     Image:
