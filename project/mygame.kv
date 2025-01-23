@@ -1,7 +1,7 @@
 #Player setting
 <Player>:
-    base_width: 50
-    base_height: 50
+    base_width: 70
+    base_height: 70
     canvas.before:
         PushMatrix
         Rotate:
@@ -35,6 +35,8 @@
     base_width: 10
     base_height: 10
     canvas:
+        Color:
+            rgba: 1, 165/255, 0, 1
         Ellipse:
             source: 'assets/bullet.png'
             pos: self.pos

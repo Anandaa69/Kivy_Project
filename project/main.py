@@ -313,7 +313,7 @@ class Bullet(Widget):
         super().__init__(**kwargs)
         self.pos = (x, y)
         self.rotation = rotation
-        self.velocity = 500  # Speed
+        self.velocity = 800  # Speed
         self.damage = damage
 
         # Update frame by frame
