@@ -134,14 +134,14 @@ class GameScreen(Screen):
         
         #reset value
         # --- Player ---
-        self.ids.player.pos = (50, 50)
-        self.ids.player.bullet_left = 20
-        self.ids.player.rotation = 0
+        self.ids.player.pos = (100, 50)
+        self.ids.player.bullet_left = 10
+        self.ids.player.rotation = 180
         self.ids.player.score = 0
         self.ids.player.hp_left = self.ids.player.hp_max
         self.ids.player.heal_item_left = 0
         self.ids.player.coin = 0
-        self.ids.player.speed = 100
+        self.ids.player.speed = 150
         self.ids.player.hp_left = 100
         self.ids.player.hp_max = 100
         
@@ -219,6 +219,12 @@ class GameScreen(Screen):
         self.wave_game += 1
         self.enemy_counts = self.enemies_now
         Clock.schedule_once(self.create_enemy, 3)
+        
+        #Play Sound
+        wave_sound = SoundLoader.load('assets/sounds/start_wave.mp3')
+        if wave_sound:
+            wave_sound.volume = self.sfx_volume
+            wave_sound.play()
         
         wave_label = WaveLabel(f'WAVE {self.wave_game}')
         self.add_widget(wave_label)  # เพิ่ม WaveLabel เข้าไปใน GameScreen
@@ -574,8 +580,8 @@ class Enemy(Widget):
         print(f"Spawned {item_type} item with ID {item_id} at {pos}")
 
 class Player(Widget):
-    rotation = NumericProperty(0)
-    bullet_left = NumericProperty(20)
+    rotation = NumericProperty(180)
+    bullet_left = NumericProperty(10)
     hp_left = NumericProperty(200)
     score = NumericProperty(0)
     heal_item_left = NumericProperty(0)
@@ -585,10 +591,10 @@ class Player(Widget):
         super().__init__(**kwargs)     
         #Property
         self.gun_type = "shotgun"
-        self.pos = (50, 50)
+        self.pos = (1100, 350)
         self.hp_max = 100
         self.heal_size = 20 # effect of heal item
-        self.speed = 300
+        self.speed = 150
         
         self.keysPressed = set()
         self._keyboard = None
@@ -624,6 +630,12 @@ class Player(Widget):
         if text == " ":  # press SpcaeBar to shoot
             if self.bullet_left > 0 and self.gun_type == 'shotgun':
                 self.shoot_bullet()
+            else: # Check is Out of Ammo ?
+                out_bullet_sound = SoundLoader.load('assets/sounds/out_of_ammo.mp3')
+                if out_bullet_sound:
+                    out_bullet_sound.volume = self.parent.sfx_volume
+                    out_bullet_sound.play()
+            
             if self.gun_type == 'pistol':
                 self.shoot_bullet()
                 
@@ -655,7 +667,7 @@ class Player(Widget):
         
         #Setup
         step_size = self.speed * dt
-        step_rotate = 125 * dt
+        step_rotate = 150 * dt
         
         if "w" in self.keysPressed:
             currenty += step_size
@@ -805,7 +817,6 @@ class MyGameApp(App):
         sm = ScreenManager()
         sm.add_widget(MainMenu(name='main_menu'))
         sm.add_widget(GameScreen(name='game'))
-        sm.add_widget(SettingScreen(name='setting_menu'))
         sm.add_widget(EndGame(name='end_game'))
         return sm
 
