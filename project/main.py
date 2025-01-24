@@ -1,12 +1,15 @@
 import kivy
-kivy.require('2.3.1')
 from kivy.config import Config
+kivy.require('2.3.1')
+
 # Screen Config
 Config.set('graphics', 'width', '1280')  # Width of Screen
 Config.set('graphics', 'height', '720')  # Height of Screen
 Config.set('graphics', 'resizable', False)  # Set can't change screen size
-# Config.set('graphics', 'resizable', False)  # Set can't change screen size
 Config.set('graphics', 'maxfps', '60')  # Set FPS to 144 fps
+
+from kivy.core.window import Window
+# Window.fullscreen = True
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
@@ -20,14 +23,40 @@ from kivy.animation import Animation
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivy.core.audio import SoundLoader
 import math
 from random import randint, choice, random
 
-Window.fullscreen = True
-
 class MainMenu(Screen):
-    pass
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.bg_song = None
 
+        Clock.schedule_interval(self.update, 1/60)
+        
+    def on_enter(self):
+        self.bg_song = SoundLoader.load('assets/sounds/main_bg.mp3')
+        if self.bg_song:
+            self.bg_song.loop = True
+            self.bg_song.volume = self.ids.bg_s.value/100
+            self.bg_song.play()
+            
+    def update(self, dt):
+        #Check Slider
+        self.bg_song.volume = self.ids.bg_s.value/100
+
+    def sound_test(self):
+        sfx = SoundLoader.load('assets/sounds/shotgun.mp3')
+        if sfx:
+            sfx.volume = self.ids.sound_ef.value/100
+            sfx.play()
+        
+    def on_leave(self):
+        self.bg_song.stop()
+        
+        game_screen = self.manager.get_screen('game')
+        game_screen.update_volume(self.ids.bg_s.value/100, self.ids.sound_ef.value/100)
+    
 class EndGame(Screen):
     total_score = NumericProperty(0)
     wave = NumericProperty(0)
@@ -45,6 +74,10 @@ class GameScreen(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.bullet_damage = 5
+        #Sound
+        self.sfx_volume = 0
+        self.bg_volume = 0
+        self.all_sfx = []
         
         self.enemy_damage = 10
         self.random_between = (20, 70)
@@ -84,6 +117,8 @@ class GameScreen(Screen):
             if enemy.enable == True:
                 enemy.follow_player(self.ids.player.pos, (self.ids.player.base_width, self.ids.player.base_height), dt)
         self.end_wave()
+        # print(f'sfx === {self.sfx_volume}')
+        # print(f'bg === {self.bg_volume}')
         
     def on_enter(self):
         self.ids.player.enable_keyboard()
@@ -211,6 +246,14 @@ class GameScreen(Screen):
         end_screen.update_wave(self.wave_game)
         # change to end screen
         self.manager.current = 'end_game'
+
+    def update_volume(self, bg_volume, sfx_volume):
+        self.sfx_volume = sfx_volume
+        self.bg_volume = bg_volume
+
+# class Sound(SoundLoader):
+#     def __init__(self) -> None:
+#         super().__init__()
 
 class UpgradePopup(Popup):
     coin = NumericProperty(0)
@@ -521,7 +564,6 @@ class Enemy(Widget):
         self.parent.add_widget(widget)  # เพิ่ม widget ลงในหน้าจอ
         print(f"Spawned {item_type} item with ID {item_id} at {pos}")
 
-
 class Player(Widget):
     rotation = NumericProperty(0)
     bullet_left = NumericProperty(20)
@@ -587,7 +629,15 @@ class Player(Widget):
         #Check gun type
         if self.gun_type == "shotgun":
             self.bullet_left -= 1
-
+            
+            gun_sound = SoundLoader.load('assets/sounds/shotgun.mp3')
+            if gun_sound:
+                gun_sound.volume = self.parent.sfx_volume
+                gun_sound.play()
+            
+        if self.gun_type == "pistol":
+            pass
+        
     def move_step(self, dt):
         currentx, currenty = self.pos
         

@@ -139,6 +139,29 @@
             pos_hint: {'center_x': 750/1280, 'center_y': (720-500)/720}
             on_press: app.stop()
 
+        Slider:
+            id: bg_s
+            min: 0
+            max: 100
+            value: 30
+            size_hint: None, None
+            width: 300
+            pos_hint: {'center_x': 1000/1280, 'center_y': (720-600)/720}
+
+        Slider:
+            id: sound_ef
+            min: 0
+            max: 100
+            value: 20
+            size_hint: None, None
+            width: 300
+            pos_hint: {'center_x': 1000/1280, 'center_y': (720-670)/720}
+
+        Button:
+            text: 'test'
+            size_hint: 0.1, 0.1
+            pos_hint: {'center_x': 0.95,'center_y': 0.15}
+            on_press: root.sound_test()
 
 <SettingScreen>:
     BoxLayout:
