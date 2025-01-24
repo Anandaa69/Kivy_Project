@@ -381,6 +381,12 @@ class Bullet(Widget):
         for key, enemy in list(self.parent.enemies.items()):
             if self.collide_with_enemy(enemy.pos, (enemy.base_width, enemy.base_height)) == True:
                 self.parent.minus_enemy_hp(enemy.enemy_id, self.damage) # cal fn()
+                
+                zombie_sound = SoundLoader.load('assets/sounds/zombie.mp3')
+                if zombie_sound:
+                    zombie_sound.volume = self.parent.sfx_volume
+                    zombie_sound.play()
+                
                 self.remove_bullet()
                 break
 
@@ -548,6 +554,10 @@ class Enemy(Widget):
         if self.get_player == False:  # debug 
             return
         self.parent.minus_player_hp(self.enemy_id)  # call fn() in GameScreen
+        take_damage = SoundLoader.load('assets/sounds/take_damage.mp3')
+        if take_damage:
+            take_damage.volume = self.parent.sfx_volume
+            take_damage.play()
 
     def spawn_item(self, pos, item_id):
         if item_id in self.parent.all_items:
