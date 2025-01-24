@@ -225,9 +225,14 @@ class GameScreen(Screen):
         wave_label.show_message(duration=0.5)
 
     def show_upgrade_popup(self):
-        # สร้างและเปิด Popup
+        # Create and open pop up
         popup = UpgradePopup(self)
         popup.open()
+        #Sound
+        sound = SoundLoader.load('assets/sounds/welcome.mp3')
+        if sound:
+            sound.volume = self.sfx_volume
+            sound.play()
     
     def next_game_value(self):
         #give harder to game
@@ -279,9 +284,7 @@ class UpgradePopup(Popup):
             print(self.game_screen.ids.player.speed)
             
             self.game_screen.ids.player.coin -= self.price
-            print('UPGRADE SPEED!!!')
-        else:
-            print('Cant buy')
+            self.buying_sound()
 
     def upgrade_hp(self):
         if self.game_screen.ids.player.coin > 0 and self.game_screen.ids.player.coin - self.price >= 0:
@@ -289,20 +292,26 @@ class UpgradePopup(Popup):
             self.game_screen.ids.player.hp_max += 5
             
             self.game_screen.ids.player.coin -= self.price
-            print('UPGRADE HP!!!')
-        else:
-            print('Cant buy')
+            self.buying_sound()
 
     def buy_bullet(self):
         if self.game_screen.ids.player.coin > 0 and self.game_screen.ids.player.coin - self.price_2 >= 0:
             self.game_screen.ids.player.bullet_left += 1
             self.game_screen.ids.player.coin -= self.price_2
+            self.buying_sound()
 
     def buy_heal(self):
         if self.game_screen.ids.player.coin > 0 and self.game_screen.ids.player.coin - self.price_2 >= 0:
             self.game_screen.ids.player.heal_item_left += 1
             self.game_screen.ids.player.coin -= self.price_2
-            
+            self.buying_sound()
+
+    def buying_sound(self):
+        buying_sound = SoundLoader.load('assets/sounds/buying.mp3')
+        if buying_sound:
+            buying_sound.volume = self.game_screen.sfx_volume
+            buying_sound.play()
+   
 class WaveLabel(Widget):
     def __init__(self, wave, **kwargs):
         super().__init__(**kwargs)
@@ -680,15 +689,23 @@ class Player(Widget):
         #Check
         if "1" in self.keysPressed:
             self.gun_select("shotgun")
+            self.gun_select_sound()
         if "2" in self.keysPressed:
             self.gun_select("pistol")
-
+            self.gun_select_sound()
+            
         #Check Collide?
         new_pos = (currentx, currenty)
         if not any(self.collide_with(new_pos, x.pos, x.size) for x in self.parent.all_obstacles):
                 if self.collide_with_wall(new_pos) == False:
                     self.pos = new_pos
 
+    def gun_select_sound(self):
+        gun_select = SoundLoader.load('assets/sounds/gun_select.mp3')
+        if gun_select:
+            gun_select.volume = self.parent.sfx_volume
+            gun_select.play()
+        
     def collide_with_wall(self, new_pos):
         x, y = new_pos
         if x < 42 or x + self.base_width > Window.width - 42:
