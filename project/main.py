@@ -5,6 +5,7 @@ from kivy.config import Config
 Config.set('graphics', 'width', '1280')  # Width of Screen
 Config.set('graphics', 'height', '720')  # Height of Screen
 Config.set('graphics', 'resizable', False)  # Set can't change screen size
+# Config.set('graphics', 'resizable', False)  # Set can't change screen size
 Config.set('graphics', 'maxfps', '60')  # Set FPS to 144 fps
 
 from kivy.app import App
@@ -21,6 +22,8 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 import math
 from random import randint, choice, random
+
+Window.fullscreen = True
 
 class MainMenu(Screen):
     pass
@@ -209,7 +212,6 @@ class GameScreen(Screen):
         # change to end screen
         self.manager.current = 'end_game'
 
-
 class UpgradePopup(Popup):
     coin = NumericProperty(0)
     def __init__(self, game_screen, **kwargs):
@@ -306,6 +308,7 @@ class SettingScreen(Screen):
 class Obstacle(Image):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.size_hint = (None, None)
         self.size = (self.texture_size)
 
 class Bullet(Widget):
