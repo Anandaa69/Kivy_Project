@@ -636,7 +636,10 @@ class Player(Widget):
                 gun_sound.play()
             
         if self.gun_type == "pistol":
-            pass
+            pistol_gun = SoundLoader.load('assets/sounds/pistol.mp3')
+            if pistol_gun:
+                pistol_gun.volume = self.parent.sfx_volume
+                pistol_gun.play()
         
     def move_step(self, dt):
         currentx, currenty = self.pos
