@@ -134,7 +134,7 @@ class GameScreen(Screen):
         
         #reset value
         # --- Player ---
-        self.ids.player.pos = (100, 50)
+        self.ids.player.pos = (1100, 350)
         self.ids.player.bullet_left = 10
         self.ids.player.rotation = 180
         self.ids.player.score = 0
@@ -630,7 +630,7 @@ class Player(Widget):
         if text == " ":  # press SpcaeBar to shoot
             if self.bullet_left > 0 and self.gun_type == 'shotgun':
                 self.shoot_bullet()
-            else: # Check is Out of Ammo ?
+            elif self.bullet_left == 0 and self.gun_type == 'shotgun': #LOAD SOUND
                 out_bullet_sound = SoundLoader.load('assets/sounds/out_of_ammo.mp3')
                 if out_bullet_sound:
                     out_bullet_sound.volume = self.parent.sfx_volume
