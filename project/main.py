@@ -385,13 +385,13 @@ class Bullet(Widget):
         #Check Collide with Enemy?
         for key, enemy in list(self.parent.enemies.items()):
             if self.collide_with_enemy(enemy.pos, (enemy.base_width, enemy.base_height)) == True:
-                self.parent.minus_enemy_hp(enemy.enemy_id, self.damage) # cal fn()
-                
+                #Play Sound
                 zombie_sound = SoundLoader.load('assets/sounds/zombie.mp3')
                 if zombie_sound:
                     zombie_sound.volume = self.parent.sfx_volume
                     zombie_sound.play()
-                
+                    
+                self.parent.minus_enemy_hp(enemy.enemy_id, self.damage) # cal fn()
                 self.remove_bullet()
                 break
 
@@ -784,6 +784,11 @@ class Player(Widget):
             print('Use Heal Item!')
             self.heal_item_left -= 1
             self.hp_left += 20
+            #Play Sound
+            heal_sound = SoundLoader.load('assets/sounds/heal.mp3')
+            if heal_sound:
+                heal_sound.volume = self.parent.sfx_volume
+                heal_sound.play()
 
 class Heal_item(Widget):
     def __init__(self, item_id,**kwargs):
