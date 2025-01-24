@@ -158,10 +158,22 @@
             pos_hint: {'center_x': 1000/1280, 'center_y': (720-670)/720}
 
         Button:
-            text: 'test'
-            size_hint: 0.1, 0.1
-            pos_hint: {'center_x': 0.95,'center_y': 0.15}
+            text: 'test sfx'
+            size_hint: 0.08, 0.05
+            pos_hint: {'center_x': 800/1280, 'center_y': 0.07}
             on_press: root.sound_test()
+        
+        Image:
+            source: 'assets/music_box.png'
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {'center_x': 0.94, 'center_y': 0.17}
+
+        Image:
+            source: 'assets/sfx_box.png'
+            size_hint: None, None
+            size: self.texture_size
+            pos_hint: {'center_x': 0.94, 'center_y': 0.07}
 
 <SettingScreen>:
     BoxLayout:
