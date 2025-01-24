@@ -43,7 +43,8 @@ class MainMenu(Screen):
             
     def update(self, dt):
         #Check Slider
-        self.bg_song.volume = self.ids.bg_s.value/100
+        if self.bg_song:
+            self.bg_song.volume = self.ids.bg_s.value/100
 
     def sound_test(self):
         sfx = SoundLoader.load('assets/sounds/shotgun.mp3')
@@ -53,6 +54,7 @@ class MainMenu(Screen):
         
     def on_leave(self):
         self.bg_song.stop()
+        self.bg_song = None
         
         game_screen = self.manager.get_screen('game')
         game_screen.update_volume(self.ids.bg_s.value/100, self.ids.sound_ef.value/100)
@@ -77,7 +79,7 @@ class GameScreen(Screen):
         #Sound
         self.sfx_volume = 0
         self.bg_volume = 0
-        self.all_sfx = []
+        self.bg_sound = None
         
         self.enemy_damage = 10
         self.random_between = (20, 70)
@@ -117,16 +119,12 @@ class GameScreen(Screen):
             if enemy.enable == True:
                 enemy.follow_player(self.ids.player.pos, (self.ids.player.base_width, self.ids.player.base_height), dt)
         self.end_wave()
-        # print(f'sfx === {self.sfx_volume}')
-        # print(f'bg === {self.bg_volume}')
         
     def on_enter(self):
         self.ids.player.enable_keyboard()
-        
         #Create Obstacles here
         obstacle_positions = [(310, 131), (310, 392), (570, 131), (830, 131), (830, 392), (42, 150), (1050, 520), (570, 400)] 
         obstacle_images = ['assets/obstacle.png' for _ in range(5)] + ['assets/obstacle_2.png', 'assets/obstacle_4.png', 'assets/obstacle.png']
-        
         self.create_obstacle(obstacle_positions, obstacle_images)
         
     def on_leave(self):
@@ -166,6 +164,9 @@ class GameScreen(Screen):
         for key, enemy in self.enemies.items():
             self.remove_widget(enemy)
         self.enemies.clear()  # Clear the list
+        
+        self.bg_sound.stop()
+        self.bg_sound = None
         
     def minus_player_hp(self, enemy_id):
         self.ids.player.hp_left -= self.enemy_damage
@@ -250,10 +251,13 @@ class GameScreen(Screen):
     def update_volume(self, bg_volume, sfx_volume):
         self.sfx_volume = sfx_volume
         self.bg_volume = bg_volume
-
-# class Sound(SoundLoader):
-#     def __init__(self) -> None:
-#         super().__init__()
+        #Play Sound
+        self.bg_sound = SoundLoader.load('assets/sounds/main_bg.mp3')
+        if self.bg_sound:
+            self.bg_sound.loop = True
+            self.bg_sound.volume = self.bg_volume
+            self.bg_sound.play()
+            print(f'Play! {self.bg_sound.volume}')
 
 class UpgradePopup(Popup):
     coin = NumericProperty(0)
@@ -753,6 +757,11 @@ class Player(Widget):
             r2h = item.base_height
 
             if (r1x < r2x + r2w and r1x + r1w > r2x and r1y < r2y + r2h and r1y + r1h > r2y):
+                #add Sound
+                collect_sound = SoundLoader.load('assets/sounds/collect_item.mp3')
+                if collect_sound:
+                    collect_sound.volume = self.parent.sfx_volume
+                    collect_sound.play()
                 item.add_to_player(self)
 
     def use_heal_item(self):
