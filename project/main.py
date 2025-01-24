@@ -9,7 +9,7 @@ Config.set('graphics', 'resizable', False)  # Set can't change screen size
 Config.set('graphics', 'maxfps', '60')  # Set FPS to 144 fps
 
 from kivy.core.window import Window
-# Window.fullscreen = True
+Window.fullscreen = True
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
@@ -346,20 +346,6 @@ class WaveLabel(Widget):
     def remove_widget_from_parent(self, *args):
         if self.parent:
             self.parent.remove_widget(self)
-
-class SettingScreen(Screen):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.select = 0 # 0 --> 1280 , 1 --> 1980
-
-    def select_screen(self, value):
-        if value == 0:
-            print('Change to 1280x720')
-            Window.fullscreen = False
-            Window.size = (1280, 720)
-        elif value == 1:
-            print('Change to FullScreen')
-            Window.fullscreen = True
 
 class Obstacle(Image):
     def __init__(self, **kwargs):
