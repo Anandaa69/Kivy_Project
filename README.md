@@ -84,3 +84,27 @@
     ปรับ position บน widget parent
 - **show_mesage() and remove_widget_from_parent(*args)** 
     แสดงAnimation ค่อยๆเพิ่มความเข้มจางของตัวหนังสือและค่อยๆลดลง โดยใช้ Animation จากนั้นผูกเข้ากับเมธอด **remove_widget_from_parent()** เพื่อให้เมื่อจบ Animation ทำการลบ widget นี้ทิ้งจาก parent
+#### Obstacle()
+ เป็นคลาสว่างที่มีไว้ระบุ Obstacle
+#### Bullet()
+ เป็นคลาสของกระสุนแต่ละนัดที่จะถูกสร้างขึ้นโดยมีค่าคุณสมบัติใน __init__ คือ pos, rotation, velocity, damage และมีการใช้ Clock เพื่อให้ทำเมธอด move_bullet ตลอดเวลา
+- **move_bullet(dt)**  
+    เป็นเมธอดที่ทำงานตลอดเวลาคือจะทำการคำนวณค่า x, y และทิศทางผ่านค่า rotation ของกระสุน ทำให้กระสุนสามารถเคลื่อนที่ไปได้ในหน้าจอ และมีการเช็คการชนของวัตถุโดยจะเช็คว่าได้ชนกับ enemy ตัวไหนมั้ยโดยใช้เมธอด **collide_with_enemy** หากชนเล่น Sound จากนั้นเรียกใช้ minus_enemy_hp(enemy_id, self.damage) ของ parent เพื่อลดเลือด enemy จากนั้นเรียกเมธอด **remove_bullet()** และ break หากไม่ชนกับ enemy ตัวไหนเลยจะไปเช็คอีกเงื่อนไขคือชนกับกำแพงหรือป่าวถ้าชน ก็เรียกเมธอด **remove_bullet()**
+- **collide_with_enemy(enemy_pos, enemy_size)**  
+    เมธอดนี้เมื่อเรียกใช้จะคำนวณว่ากระสุนได้ชนกับ enemy ตัวนี้หรือป่าว โดยจะ return เป็น True False
+- **remove_bullet()**
+    เมธอดนี้เมื่อเรียกใช้จะทำการให้ parent ลบ widget ตัวเองออก
+#### Enemy(Widget)
+ เป็นคลาสของ enemy แต่ละตัวเมื่อมีการสร้าง โดยมีคุณสมบัติค่า speed, id, enable?, get_player?, และค่าของมุมที่ไว้ใช้ในการคำนวณอัลกอรึทึมให้ enemy มัน detect player และ หลบเลี่ยง obstacles | มีการใช้ Clock เช็คตรวจเวลากับเมธอด **debug_values()**
+- **debug_values(dt)**  
+    เช็คว่าเลือดมีน้อยกว่า 0 มั้ยถ้าใช่ให้เซ็ตเป็น 0 (กันเลือดติดลบ)
+- **enable_enemy()**  
+    เซ็ตค่า self.enable = True
+- **disable_enemy()**  
+    เซ็ตค่า self.enable = False และเช็คต่อว่า enemy เลือดเหลือ 0 หรือยัง ถ้าใช่ให้เพิ่ม score ไปที่ player ลดค่า enemy_counts ของเกม เพิ่มเงินให้ player จากนั้นทำการสุ่มโอกาส 50% ว่าจะมี item ดรอปมั้ย ถ้าได้เรียก **spawn_item(self.pos, self.enemy_id)** และย้าย enemy ให้ออกจากหน้าจอก่อน
+- **collide_with_obstacle()**  
+    เป็นเมธอดที่จะเช็คว่าตอนนี้กระสุนนัดนี้ได้ชนกับ obstacle ตัวไหนหรือป่าวถ้าชน return True ไม่ False
+- **find_clear_path(angle)**  
+    เป็นเมธอดที่ใช้เพื่อคำนวณเพื่อหาเส้นทางใหม่โดยการหันหน้าเพิ่ม 15 องศา เมธอดนี้ใช้กับ follow_player() เพื่อหลบ obstacles
+- **follow_player(player_pos, player_size, dt)**  
+    เป็นเมธอดที่ถูกเรียกใช้ตลอดเวลาผ่าน Clock ใน parent อย่างหน้า game (GameScreen()) เป็นเมธอดการคำนวณเดินหลักของ enemy ที่จะตาม player ไปตรวจเช็คชนกำแพงหรือป่าวชน obstacles มั้ยโดยจะใช้ค่า x, y และ rotation เป็นหลัก

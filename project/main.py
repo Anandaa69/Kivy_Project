@@ -526,7 +526,7 @@ class Enemy(Widget):
         if not self.collide_with(new_pos, player_pos, player_size) and not self.collide_with_wall(new_pos):
             self.get_player = False
             self.pos = new_pos
-        else:
+        elif self.collide_with(new_pos, player_pos, player_size): #debug
             self.get_player = True
             self.attack_player()
 
