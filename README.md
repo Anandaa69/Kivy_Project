@@ -122,7 +122,7 @@
 - **spawn_item(self, pos, item_id)**  
     เมื่อถูกเรียกใช้ภายในเมธอดนี้ จะทำการสุ่มเลือกว่าจะได้ ammo หรือ heal จากนั้นนำค่าที่สุ่มได้มาสร้างเป็น object ของ class ammo_item or heal_item และทำการเพิ่ม add_widget item ลงใน parent (หน้าจอเกม) และเก็บค่าเป็น dict ไว้ใน parent.all_items เพื่อให้เรียกใช้หรือตรวจสอบได้ง่าย
 #### Player(Widget)
-    เป็นคลาสของ player มีตัวแปรที่เยอะและใช้ NumericProperty เพื่อให้อัพเดทไปยังทุกส่วนหากมีการเปลี่ยนแปลงค่านั้นๆ ซึ่งชื่อตัวแปรสื่อความหมายอยู่แล้วเช่น rotation, bullet_left, hp_left, score, heal_item_left, coin ภายใน __init__ ก็มีคุณสมบัติค่าพื้นฐานที่ใช้กำหนดคำนวณอย่าง gun_type, pos, hp_max, heal_size, speed มีการใช้ Clock เพื่อสั่งให้ตรวจสอบตลอดเวลา 3 เมธอด
+ เป็นคลาสของ player มีตัวแปรที่เยอะและใช้ NumericProperty เพื่อให้อัพเดทไปยังทุกส่วนหากมีการเปลี่ยนแปลงค่านั้นๆ ซึ่งชื่อตัวแปรสื่อความหมายอยู่แล้วเช่น rotation, bullet_left, hp_left, score, heal_item_left, coin ภายใน __init__ ก็มีคุณสมบัติค่าพื้นฐานที่ใช้กำหนดคำนวณอย่าง gun_type, pos, hp_max, heal_size, speed มีการใช้ Clock เพื่อสั่งให้ตรวจสอบตลอดเวลา 3 เมธอด
 - **enable_keyboard(self)**  
     เป็นเมธอดที่จะทำให้การใช้คีย์บอร์ดนั้นทำงานโดยมีการรับค่าจาก keybaord โดยใช้ Window.request_keyboard และมีการผูกค่าปุ่มตอนขึ้นลงกับเมธอด _on_key_down, _on_key_up
 - **disable_keyboard(self)**  
