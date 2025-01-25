@@ -107,4 +107,41 @@
 - **find_clear_path(angle)**  
     เป็นเมธอดที่ใช้เพื่อคำนวณเพื่อหาเส้นทางใหม่โดยการหันหน้าเพิ่ม 15 องศา เมธอดนี้ใช้กับ follow_player() เพื่อหลบ obstacles
 - **follow_player(player_pos, player_size, dt)**  
-    เป็นเมธอดที่ถูกเรียกใช้ตลอดเวลาผ่าน Clock ใน parent อย่างหน้า game (GameScreen()) เป็นเมธอดการคำนวณเดินหลักของ enemy ที่จะตาม player ไปตรวจเช็คชนกำแพงหรือป่าวชน obstacles มั้ยโดยจะใช้ค่า x, y และ rotation เป็นหลัก
+    เป็นเมธอดที่ถูกเรียกใช้ตลอดเวลาผ่าน Clock ใน parent อย่างหน้า game (GameScreen()) เป็นเมธอดการคำนวณเดินหลักของ enemy ที่จะตาม player ไปตรวจเช็คชนกำแพงหรือป่าวชน obstacles มั้ยโดยจะใช้ค่า x, y และ rotation เป็นหลัก หาก enemy ชน player ให้เรียกใช้ **attack_player()** ในเมธอดนี้มีการเรียกใช้ find_clear_path(), collide_with(), collide_with_wall()
+- **collide_with(self, o1_pos, o2_pos, o2_size)**  
+    เป็นเมธอดคำนวณเช็คว่าตอนนี้กระสุนเราได้ชนกับobject o2 หรือป่าว return ค่าเป็น True, False
+- **collide_with_wall(new_pos)**  
+    เช็คว่าชนกับกำแพงหรือไม่โดยเช็คผ่านค่า x และ y ที่เป็นกำแพงที่กำหนดไว้ return True, False
+- **attack_player()**  
+    ถูกเรียกใช้เมื่อ enemy ชน player ในเมธอด follow_player() โดยจะเรียกใช้ minus_player_hp(self.enemy_id) ของ parent จากนั้นเล่นSound เสียง player โดนโจมตี
+- **spawn_item(pos, item_id)**  
+    เมื่อถูกเรียกใช้ภายในเมธอดนี้ จะทำการสุ่มเลือกว่าจะได้ ammo หรือ heal จากนั้นนำค่าที่สุ่มได้มาสร้างเป็น object ของ class ammo_item or heal_item และทำการเพิ่ม add_widget item ลงใน parent (หน้าจอเกม) และเก็บค่าเป็น dict ไว้ใน parent.all_items เพื่อให้เรียกใช้หรือตรวจสอบได้ง่าย
+#### Player(Widget)
+    เป็นคลาสของ player มีตัวแปรที่เยอะและใช้ NumericProperty เพื่อให้อัพเดทไปยังทุกส่วนหากมีการเปลี่ยนแปลงค่านั้นๆ ซึ่งชื่อตัวแปรสื่อความหมายอยู่แล้วเช่น rotation, bullet_left, hp_left, score, heal_item_left, coin ภายใน __init__ ก็มีคุณสมบัติค่าพื้นฐานที่ใช้กำหนดคำนวณอย่าง gun_type, pos, hp_max, heal_size, speed มีการใช้ Clock เพื่อสั่งให้ตรวจสอบตลอดเวลา 3 เมธอด
+- **enable_keyboard()**  
+    เป็นเมธอดที่จะทำให้การใช้คีย์บอร์ดนั้นทำงานโดยมีการรับค่าจาก keybaord โดยใช้ Window.request_keyboard และมีการผูกค่าปุ่มตอนขึ้นลงกับเมธอด _on_key_down, _on_key_up
+- **disable_keyboard()**  
+    เป็นเมธอดที่จะหยุดการรับค่า keyboard, การทำงานของคีย์บอร์ด 
+- **_on_keyboard_closed()**  
+    เรียกใช้ disable_keyboard() อีกที
+- **_on_key_down(self, keyboard, keycode, text, modifiers)**  
+    เมื่อกดปุ่มตัวของ Window จะส่งค่าอากิวเมนต์มาหลายค่าแต่ต้องการแค่ text ก็คือปุ่มที่กด โดยภายในนี่จะทำการ add ค่า text เข้าไปใน set() ของ self.keysPrssed และมีการเรียกใช้ว่าหาก text คือ " " หรือ spacebar ให้ทำการยิงกระสุนโดยเรียก shoot_bullet() ลูกซองหากกระสุนนั้นมีมากกว่า 0 และ gun_type เป็น shotgun หากกระสุนมีเท่ากับ 0 แล้ว gun_type เป็น shotgun ให้โหลดเสียงกระสุนหมดมา และเช็คอีกว่าถ้า gun_tyle เป็น pistol ให้เรียกใช้ shoot_bullet()
+- **_on_key_up(keyboard, keycode)**  
+    ทำการลบค่าปุ่มที่พึ่งกดไปที่อยู่ใน set ออก
+- **shoot_bullet(self)**  
+    ทำการสร้างกระสุนขึ้นมาที่เป็น object ของ class Bullet() และ add widget กระสุนในหน้าจอเกม (parent) และเช็คประเภทของปืนเพื่อโหลด Sound แต่ละประเภท
+- **move_step(dt)**  
+    เป็นเมธอดที่ถูกรันตลอดเวลา โดยจะทำการอัพเดทตำแหน่ง x y หรือ rotation ตามการกดปุ่ม w, a, s, d, j, k หรือกด h เพื่อเรียกเมธอด use_heal_item() กด 1, 2 เพื่อเลือกประเภทปืน โดยเมื่อกดเดินจะยังไม่อัพเดทเลยจะไปเช็คเงื่อนไขก่อนว่าชนกำแพงหรือ obstacles มั้ยถ้าไม่ก็ให้อัพเดท postion ใหม่ได้เลย
+- **gun_select_sound(self)**  
+    โหลด Sound เมื่อเปลี่ยนปืน
+- **collide_with_wall(self, new_pos)**  
+    เช็คว่าชนกับตำแหน่ง x, y ที่่เป็นกำแพงที่ได้กำหนดไว้หรือป่าว return True, False
+- **collide_with(self, o1_pos, o2_pos, o2_size)**  
+    เช็คและคำนวณว่าได้ชนกับ o2 (object2) หรือไม่ return True, False
+- **debug_values(self, dt)**  
+    เช็คในกรณีที่อาจจะมีเลือดติดลบเลือดเกินกำหนด กระสุนเกินจำนวณกระสุนติดลบ ไอเทม heal มีน้อยกว่า0 มีมากกว่ากำหนด ให้มันไม่เกินค่าเหล่านั้นเพื่อลดข้อผิดพลาด
+- **gun_select(self, gun)**  
+    เป็นเมธอดเปลี่ยนค่าเมื่อเปลี่ยนปืน โดยจะเปลี่ยนค่า gun_type เป็นประเภทของปืนที่เลือก และปรับดาเมจของกระสุนใน parent หลัก โดยปืน shotgun กระสุนดาเมจ 5 นัดเดียวตาย pistol กระสุนดาเมจ 0.5 ,10 นัดถึงจะตาย และทำการย้ายตำแหน่ง UI ที่ทำการเลือกปืนไปที่ตำแหน่งต่างๆ
+- **check_collide_item(self, dt)**
+    เช็คคำนวณว่า player ได้เดินชน item ไหนหรือป่าวโดยใช้ for วนเช็คใน ค่า dict ของ parent ที่ได้เก็บ object ของ item เอาไว้ ซึ่งเมธอดนี้จะเช็คตลอดเวลาเพราะใช้ Clock ในตอนแรก หากเดินชนให้เล่น Sound และเรียกใช้เมธอดของ object item คือ item.add_to_player(self)
+- **use_heal_item(self)**
