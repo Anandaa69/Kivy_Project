@@ -61,11 +61,26 @@
     เมธอดนี้จะถูกเช็คตลอดเวลาผ่าน update เพื่อให้เมื่อจบ WAVE จะโชว์ store และ ปุ่มต่างๆ เมธอดนี้จะตรวจเช็คว่า ผู้เล่นได้เดินชนกับ id nw_ob และ enemy_left เท่ากับ 0 หรือป่าวถ้าใช่ให้ขึ้นปุ่มถ้าไม่ไม่ต้องขึ้น และทำนองเดียวกันเช็คกับตัว Store ว่าชนหรือไม่แล้วทำการโชว์ปุ่มไม่โชว์ปุ่ม
 - **next_wave()**  
     เป็นเมธอดที่เมื่อมีการเรียกใช้จากปุ่ม (ใน .kv) จะทำการอัพเดทค่า wave_game และค่า enemy_counts (enemy ที่เหลือใน wave)และใช้ Clock เพื่อสร้างดีเลย์รอ 3 วิจากนั้นเรียกใช้เมธอด **create_enemy()** และเรียกใช้ Sound ด้วย SoundLoader.load() และทำการสร้างข้อความโชว์ WAVE ที่หน้าจอโดยใช้วิธีสร้าง object ข้อความที่เป็น object ของคลาส WaveLabel และทำการ add_widget ลงหน้าเกม จากนั้นเรียกใช้เมธอด show_message ของ object ข้อความ WAVE
-- **show_upgrade_popup()** 
+- **show_upgrade_popup()**  
     เป็นเมธอดที่ถูกเรียกใช้เมื่อกดปุ่ม (ใน .kv) โดยจะทำการสร้าง popup ขึ้นเพื่อเป็น object ของคลาส UpgradePopup() และเรียกใช้เมธอด open() เพื่อโชว์ popup ร้านค้าขึ้นมา และโหลด Sound ผ่าน SoundLoader.load()
-- **next_game_value()**
+- **next_game_value()**  
     เมื่อเรียกใช้จำทำการปรับค่าของเกมใน WAVE ถัดไปให้มีความยากขึ้น
-- **end_game()**
+- **end_game()**  
     เมื่อเรียกใช้จะทำการส้่งค่าไปยังอีกจอ (end_game) โดยใช้ manager.get_screen() จากนั้นส่งค่า player score, wave_game ไปเพื่อไปโชว์ในหน้าสุดท้าย และทำการปรับจอไปยังหน้า end_game โดยใช้ self.manager.current
-- **update_volume(bg_volume, sfx_volume)**
+- **update_volume(bg_volume, sfx_volume)**  
     ปรับค่าเสียงที่ได้รับมาจากอีกคลาส และสั่งให้เริ่มเล่น Music พื้นหลัง
+#### UpgradePopup(Popup)
+ เป็นคลาส pop up ร้านค้า ใน __init__ มีการกำหนดค่าราคาของไอเทมและการอัพเกรด และผูกค่าเงินที่แสดงในร้าน เมธอด
+ - **update_coin(instance, value)**  
+    เป็นเมธอดที่ผูกไว้กับค่าเงินของ parent.ids.player
+- **upgrade_speed()**  
+    จะถูกเรียกใช้จากปุ่มใน (.kv) เพื่อทำการเช็คเงินลดเงินและเพิ่มค่าอัพเดทให้ speed หากเงินพอและเรียกใช้เมธอด **buying_sound()**
+- **upgrade_hp()** , **buy_bullet()**, **buy_heal()** มีลักษณะเดียวกันกับ **upgrade_speed()**  
+- **buying_sound()**  
+    เล่นเสียงซื้อของผ่าน SoundLoader.load()
+#### WaveLabel()
+ เป็นคลาสที่จะสร้าง Label Wave ตามด้วยเลขขึ้นมาเพื่อโชว์ในหน้าจอ game 
+- **on_parent(instance, parent)**  
+    ปรับ position บน widget parent
+- **show_mesage() and remove_widget_from_parent(*args)** 
+    แสดงAnimation ค่อยๆเพิ่มความเข้มจางของตัวหนังสือและค่อยๆลดลง โดยใช้ Animation จากนั้นผูกเข้ากับเมธอด **remove_widget_from_parent()** เพื่อให้เมื่อจบ Animation ทำการลบ widget นี้ทิ้งจาก parent
