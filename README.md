@@ -2,7 +2,7 @@
  เป็นเกมแนว **shooting** มุมมอง **bird eyes view** ที่ผู้เล่นต้องต่อสู้กับซอมบี้ โดยผู้เล่นต้องบริหารทรัพยากรอย่าง พลังชีวิต ยา กระสุน ให้ดี โดยจุดประสงค์ของเกมต้องจัดการซอมบี้ในแต่ละ WAVE ไปเรื่อยๆจนกว่าเราจะไม่ไหว โดยในแต่ละ WAVE นั้นซอมบี้ความเก่งจะเพิ่มขึ้น
 ## RUN
 1. python -m venv venv
-2. .\venv\Scripts\actiave --> Window | source ./venv/bin/activate --> Linux
+2. .\venv\Scripts\actiave (Window) | source ./venv/bin/activate (Linux)
 3. poetry install
 4. python project/main.py --> RUN! 
 ## การรันและภาพรวมของโปรแกรม
